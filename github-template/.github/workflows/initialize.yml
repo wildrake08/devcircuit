@@ -1,0 +1,10 @@
+name: DevCircuit starter check
+on: [push]
+jobs:
+  starter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Explain initialization
+        if: hashFiles('.devcircuit-template.json') != ''
+        run: echo "Run 'uvx --from devcircuit devcircuit --root . create APPLICATION_NAME' to initialize this repository."

@@ -1,0 +1,1524 @@
+{
+  "evidence": {
+    "assessed_at": 1792370604,
+    "claim_boundary": "external versioned assurance kernel; thin GitHub application starter; application-centered generated repository; one-command project creation; primary conversational developer interface; internal session-token vault; no manual digest copying; explicit non-autonomous human decisions; autonomous resumable engineering supervisor; durable artifact acceptance; durable deployment; monitoring active before closure; criterion-specific production evidence; two distinct passing production outcome periods; signed legacy migration plan; general assurance kernel; composable lifecycle profiles; replaceable evidence adapters; minimal-viability intake; non-authoritative baseline proposal; explicit product baseline authorization; executable product-baseline binding; enforced rejection rationale and revision; revocable bearer sessions and mandates; non-reflective sensitive-input constraint; trial transcripts in authorization review; actionable external-agent failures; six preconfigured production adapter families; externally signed production observations; external public-key trust anchors; composable software quality profile; composable UX engineering profile; outcomes achieved and sustained; independent continuation authority; local HMAC runtime identities; embedded, not externally trusted, release-assessment public key; simulated local deployment; externally supplied production trust anchor; authentic target-environment adapters required; time-bounded target-system verdict; repository rulesets remain external controls; no universal or permanent production claim; no universal quality or UX certification; no OS sandbox guarantee; no production identity-provider guarantee",
+    "dimensions": {
+      "adaptability": true,
+      "effectiveness": true,
+      "feasibility": true,
+      "grounding": true,
+      "resilience": true,
+      "sufficiency": true,
+      "verifiability": true
+    },
+    "format": "DevCircuit-parts-whole-assessment/v1",
+    "inventory": [
+      {
+        "path": ".github/CODEOWNERS",
+        "sha256": "0a10fb9d01b4a1bc0a71ebea65a3f63cd67b672b6415309f0e8e29a73558c287",
+        "size": 220
+      },
+      {
+        "path": ".github/ISSUE_TEMPLATE/change.yml",
+        "sha256": "3dc69e79d9723ac276fd44925807b179c7877f3a725454d0763b2c9bbe728f0f",
+        "size": 711
+      },
+      {
+        "path": ".github/dependabot.yml",
+        "sha256": "04f91c7767480a0b1daddc86c3dc62332f10ed4ff14a16cb65eada0926dd7e83",
+        "size": 263
+      },
+      {
+        "path": ".github/pull_request_template.md",
+        "sha256": "951beb1d386687c5c372b17dc00eab3badd295c0087879cd25b4f545b96f9cc2",
+        "size": 448
+      },
+      {
+        "path": ".github/workflows/devcircuit-verify.yml",
+        "sha256": "b0cc60a080b47a5b9bbea35ab99393de0b04c15911a4359efcc6ee60b0dd5ce5",
+        "size": 1066
+      },
+      {
+        "path": ".gitignore",
+        "sha256": "59cdf6593d47b7b64133b6085ad2fa94564c92f0a753bfa6fc104ec7616a7e94",
+        "size": 303
+      },
+      {
+        "path": "AGENTS.md",
+        "sha256": "ec48e9bdf6f8e54868af7de33719e1773e7e54c83eef54a885f24e5f658ec2ca",
+        "size": 696
+      },
+      {
+        "path": "ARCHITECTURE.md",
+        "sha256": "c5c3aaa0d21ca3c4cd3d2bc5ac2ce037a4a6b7855b31284774d804f5ee628635",
+        "size": 5169
+      },
+      {
+        "path": "AUTONOMY_PROTOCOL.md",
+        "sha256": "2c81e3bed8af91202ebaf9c9b5e0e34c39c9c2ddab93b4760e97304404cb0e02",
+        "size": 1838
+      },
+      {
+        "path": "CONFORMANCE_REPORT_1.0.0.md",
+        "sha256": "f5371aab3e74f676941a1d1812a50e03c9b744458c82b4b54ee69278365bfb19",
+        "size": 2923
+      },
+      {
+        "path": "CONTRIBUTING.md",
+        "sha256": "33988747f1a56e52ca3ac830d1751c8e9575569733373a53beb2560a54dd20ec",
+        "size": 830
+      },
+      {
+        "path": "COPILOT_GUIDE.md",
+        "sha256": "2912e1e32a3ca813706ccbc3d3151aff2656411727ee25a93e4d5137d14f43ab",
+        "size": 3566
+      },
+      {
+        "path": "DEVELOPER_EXPERIENCE.md",
+        "sha256": "4b4b6b0522454c175239c417a3c41576f76b5993d7c95ddf211296a743930023",
+        "size": 1690
+      },
+      {
+        "path": "GENERAL_ASSURANCE_GUIDE.md",
+        "sha256": "f83f631623d3c1e0a7ff14c7a97cdf424a6dd44492584a92dc0ad7940ed8e691",
+        "size": 4152
+      },
+      {
+        "path": "GITHUB_TEMPLATE_GUIDE.md",
+        "sha256": "0d1c8806b444a32890cc4c264bd9c8cdb7c45b489e7d3de707fbc2eaf3365ba6",
+        "size": 1530
+      },
+      {
+        "path": "LICENSE",
+        "sha256": "67fd671b40ecea55ec5b3b9ae351f68675c5c4c2c01c87c472d4bcd47a234147",
+        "size": 1080
+      },
+      {
+        "path": "MIGRATION_FROM_0.8.md",
+        "sha256": "2378e3dcd7095274ef4c4ef447221fba4e8b9ecc30d07f6cafd622d5c0293a46",
+        "size": 846
+      },
+      {
+        "path": "MIGRATION_TO_DEVCIRCUIT.md",
+        "sha256": "7ea14315b43607339e6272e3c1012a00781ce7f6264cb7e2f774edadc705d3a7",
+        "size": 962
+      },
+      {
+        "path": "MINIMAL_VIABILITY_INTAKE.md",
+        "sha256": "c9d34eb5745e5695ee49fadf9fc647b4aabf2a435e6e4962a2a85a055f329f86",
+        "size": 2365
+      },
+      {
+        "path": "NORMATIVE.md",
+        "sha256": "60528340ad2001b3ecf06a4c16fb38eef13e244c71e5031f7e78654c1f1267bf",
+        "size": 10433
+      },
+      {
+        "path": "ONBOARDING_AND_VISUAL_OPERATOR.md",
+        "sha256": "3761d6da447a8ef7eafda84a62a0e4b7868f5466b25fab7518460b18647443bd",
+        "size": 2481
+      },
+      {
+        "path": "OPERATOR_GUIDE.md",
+        "sha256": "221c8c347e038edc23039fd711c99a84a6b5c8858eafddcb6d8545c2b7005671",
+        "size": 7426
+      },
+      {
+        "path": "OUTCOME_ASSURANCE.md",
+        "sha256": "607d8b1b7b104417550093f77688ca72ec5102250ab0563e14db6eea0d182bcd",
+        "size": 1762
+      },
+      {
+        "path": "PRECONFIGURED_PRODUCTION_ADAPTERS.md",
+        "sha256": "40c044811f9fb8a911f00fdffc476195f74d7d2d5f5b07216944e4f50198b2ec",
+        "size": 1503
+      },
+      {
+        "path": "PRODUCTION_PROFILE.md",
+        "sha256": "5dc14f6895d19a1386057f3422d30181b3d2297336fab3417028a058d0b4097d",
+        "size": 1601
+      },
+      {
+        "path": "README.md",
+        "sha256": "9c8469c76f27986fac79f4802575ca70efa480a84522a2b0c9731a2ee1b23f44",
+        "size": 3577
+      },
+      {
+        "path": "SECURITY.md",
+        "sha256": "6107f188e4a6c142ed0ce680ca64640b8fa64660c62693bd1defac11fbbf93a2",
+        "size": 823
+      },
+      {
+        "path": "SOFTWARE_QUALITY_PROFILE.md",
+        "sha256": "11ebae910249995fef3ca6ef622fdb99f866eda9fd812ea73d539632888a6eb1",
+        "size": 4451
+      },
+      {
+        "path": "UX_ENGINEERING_PROFILE.md",
+        "sha256": "f13107e9c6bd55ea7aa11d8e8c6d210c1036657fdb9937ae0ab6f6a30faede99",
+        "size": 4920
+      },
+      {
+        "path": "build.py",
+        "sha256": "ad86df525e5d9f5c12fcff1667067dcdda3d022b2609f7d811df7faae2330762",
+        "size": 530
+      },
+      {
+        "path": "devcircuit/__init__.py",
+        "sha256": "27e8febb48ada44153ea2add9969a2c50a9831a74d9755fdd53c549a888b1cc2",
+        "size": 22
+      },
+      {
+        "path": "devcircuit/adapter_templates/catalog.json",
+        "sha256": "b20228ab593b976259b17f193fa82e8cf3599138adef3bbc54209972f7b55a9f",
+        "size": 1870
+      },
+      {
+        "path": "devcircuit/adapters.py",
+        "sha256": "d778f5bc4c25a9612b7913387500634c657fff192d1f602298a324b791f4b0d2",
+        "size": 4371
+      },
+      {
+        "path": "devcircuit/assurance.py",
+        "sha256": "f49e4312f08fc2ffd0ea570fb413e53cb8c4bc9167fc445545d7c00bd4c9a25b",
+        "size": 19521
+      },
+      {
+        "path": "devcircuit/autonomy.py",
+        "sha256": "b4965df5210ef1799827f1206d2b6eb892540aa5858e2ee2f8c1b200faa158f9",
+        "size": 12634
+      },
+      {
+        "path": "devcircuit/cli.py",
+        "sha256": "5ae73d163c79ec0d0fa0278c7834871634deeaa01521278d6220cba5b2cb9c71",
+        "size": 4080
+      },
+      {
+        "path": "devcircuit/copilot.py",
+        "sha256": "7bb6f1f2e7f433b09bbb0eb736ebb989bec15e93ef24fd48266c05c960a0fce0",
+        "size": 22919
+      },
+      {
+        "path": "devcircuit/copilot_cli.py",
+        "sha256": "1e5fe9f2c5cd6c94d0e6a95cc58fce43480b9611f4338d2b5c6cd64cfd731fa1",
+        "size": 4161
+      },
+      {
+        "path": "devcircuit/developer_cli.py",
+        "sha256": "019c88f3b6ad7f785a41d0297c9c904d0cab15b28ea49eec72ea0d51265aa4d8",
+        "size": 17598
+      },
+      {
+        "path": "devcircuit/discovery.py",
+        "sha256": "c9a1e8bfd8a94a7a24d880ffb39c79889cca706795aabe61cdcf40c4dc1e83c5",
+        "size": 3364
+      },
+      {
+        "path": "devcircuit/engine.py",
+        "sha256": "427119bae871bc9f50d3855b997a67e0bb0a5b1cec3f54c877828fcd7b10f14a",
+        "size": 47446
+      },
+      {
+        "path": "devcircuit/guided_operator.py",
+        "sha256": "f4c30c9b977507be501513d7855d7f8c4f30a199d826688533d310cd24f30a97",
+        "size": 24597
+      },
+      {
+        "path": "devcircuit/intake.py",
+        "sha256": "d4d24a5de1725da742fd25a9a6c95329d63ddb7bc01909a3d0220e35992e38ef",
+        "size": 13457
+      },
+      {
+        "path": "devcircuit/onboarding.py",
+        "sha256": "af43b4c678bed00438a29c1d8cb88abc8fa41321a35a22fb20a4b9a2eb41a407",
+        "size": 4311
+      },
+      {
+        "path": "devcircuit/onboarding_templates/coffee-cart-pos.json",
+        "sha256": "ce3aafb1f78d208243ebf6ccf5ff1c246a6f28711a70c0886e957cc55ce8fe19",
+        "size": 2434
+      },
+      {
+        "path": "devcircuit/onboarding_templates/general-interactive.json",
+        "sha256": "f9497d69f7a21a015d409f4598a9fbf279a6b870a114d1f60fc7510a62bea7be",
+        "size": 2418
+      },
+      {
+        "path": "devcircuit/onboarding_templates/saas-web.json",
+        "sha256": "87c79572d34bd1feeef0af3b6546f507b9af79fd1269f9246a4b3e4793f0eea2",
+        "size": 2398
+      },
+      {
+        "path": "devcircuit/operator_cli.py",
+        "sha256": "6bfa1e55ede7d2d2e83f533b8f85db275e1cbb5805187c59298d4ed3d54fa5bf",
+        "size": 8843
+      },
+      {
+        "path": "devcircuit/operator_ui/app.css",
+        "sha256": "1266f02dd690b6780f048ed229e86311c1b6b62f7003c5de5ce71d1a62d3bf3e",
+        "size": 1947
+      },
+      {
+        "path": "devcircuit/operator_ui/app.js",
+        "sha256": "72d0474badb436fe0b9ef66ea60396d01ba19ff66027f7b33defb0c36e9d14a4",
+        "size": 4928
+      },
+      {
+        "path": "devcircuit/operator_ui/index.html",
+        "sha256": "4a2639b42cdcb1697883d3b38b2f87ded0e6e2bc74606d71923393e05aa70eb0",
+        "size": 3752
+      },
+      {
+        "path": "devcircuit/policy.py",
+        "sha256": "83d58a99f1a6603f6dc41b6e03c0d72f3e062a2f9deaa435fbf30a847c5d5ff8",
+        "size": 2621
+      },
+      {
+        "path": "devcircuit/production.py",
+        "sha256": "5151729b92a4927d49cf774cf3750286de37dc69e3405a26565719e6515c1851",
+        "size": 8781
+      },
+      {
+        "path": "devcircuit/production_adapters.py",
+        "sha256": "55d0f3b146876cbfb6893264cd6f2d265160394aef5cd71d5f5d119e2512f121",
+        "size": 5959
+      },
+      {
+        "path": "devcircuit/profiles/base-production.json",
+        "sha256": "671ca360cda048536bc70d87e51cf5d0f553a0823b778d7e82a901dce3b3b164",
+        "size": 8168
+      },
+      {
+        "path": "devcircuit/profiles/point-of-sale.json",
+        "sha256": "f7db704b70a3c1fe288dc766820e10e1f6e9e14eeb7c96258a4e2320adeb4939",
+        "size": 1032
+      },
+      {
+        "path": "devcircuit/profiles/saas.json",
+        "sha256": "95c4b15295a36bf5e781f2a3d4726c5da8dc07e81759cf6e657b87b6ddb8b20d",
+        "size": 706
+      },
+      {
+        "path": "devcircuit/profiles/software-quality.json",
+        "sha256": "ffea02b9c019eb394d966adc1ace9732c899ff12641a41902e8f439d767faf16",
+        "size": 4923
+      },
+      {
+        "path": "devcircuit/profiles/ux-engineering.json",
+        "sha256": "048b572bba9d143e6a26d8ee9333e34150ee04f547569dca63c6c1ffd20537c1",
+        "size": 5888
+      },
+      {
+        "path": "devcircuit/project.py",
+        "sha256": "13645f832e90f237b7719dc1ce3337d5d4fa01ffe30fb3978e1ecea73bb1ccba",
+        "size": 9254
+      },
+      {
+        "path": "devcircuit/quality.py",
+        "sha256": "b7686d4ec24cb1810f568d0c93ca61f878e56e866a1917805a5d849bded5cce9",
+        "size": 11792
+      },
+      {
+        "path": "devcircuit/quality_profiles/software-quality.json",
+        "sha256": "299015d84301a2cfce322d3ad2f8f1f5962dad934ed745705aecfb0103a0b2a6",
+        "size": 10399
+      },
+      {
+        "path": "devcircuit/quality_profiles/ux-engineering.json",
+        "sha256": "f563ff66ae3944135c6b5b82ac91ac59e1882089aab1cb3f831025f8cbd1b41c",
+        "size": 13032
+      },
+      {
+        "path": "devcircuit/release_assessment.py",
+        "sha256": "83d305b1787c468d2484ca7e60f1c071985da3512e20245849aff832931f573a",
+        "size": 20239
+      },
+      {
+        "path": "devcircuit/schemas/adapter-manifest.schema.json",
+        "sha256": "7a0dbd634ab09be1ec48f65edd0e74502cf76740636a19e9745da5759ca01772",
+        "size": 960
+      },
+      {
+        "path": "devcircuit/schemas/adapter-request.schema.json",
+        "sha256": "6585d9fdff64a4f54d77b10522e7c12d1756337ac879dd4f0888eaa9f8a164ec",
+        "size": 780
+      },
+      {
+        "path": "devcircuit/schemas/adapter-result.schema.json",
+        "sha256": "d3ecfcbd6c6a901938394109247d04ef8339d041e843fba704a982034b078f48",
+        "size": 896
+      },
+      {
+        "path": "devcircuit/schemas/artifacts/A1.schema.json",
+        "sha256": "c99b26b21c595ce3b2aa6e18fcabcff23957dc667ba7c74bb91df3c37e545d63",
+        "size": 1901
+      },
+      {
+        "path": "devcircuit/schemas/artifacts/A2.schema.json",
+        "sha256": "ce0ff3cafcb20404d89263b17e8fd7f92000fe38d7743286920eae1da949d04c",
+        "size": 1806
+      },
+      {
+        "path": "devcircuit/schemas/artifacts/A3.schema.json",
+        "sha256": "9dbcf77447a349da859d888224a24ce453ffb502854eca73a67461fa851583aa",
+        "size": 1231
+      },
+      {
+        "path": "devcircuit/schemas/artifacts/A4.schema.json",
+        "sha256": "29a8961ad8ef1b981951dba1173cc2d1d35e7ab35a46f752b241d47117361cce",
+        "size": 2519
+      },
+      {
+        "path": "devcircuit/schemas/artifacts/A5.schema.json",
+        "sha256": "6fc20e803e3337f452226936e14a91caa3ead274040bd00af4983565ef6fdc12",
+        "size": 1868
+      },
+      {
+        "path": "devcircuit/schemas/artifacts/A6.schema.json",
+        "sha256": "c3ec2f16a1cb124edb76964a88e9cc190c1632cb801a44b135525ee075a00dc8",
+        "size": 1508
+      },
+      {
+        "path": "devcircuit/schemas/artifacts/A7.schema.json",
+        "sha256": "de0f3810073bd1615cc15064e530d3ab415d8b42cad10f376a5a41f54a9ea373",
+        "size": 2030
+      },
+      {
+        "path": "devcircuit/schemas/artifacts/A8.schema.json",
+        "sha256": "6396794b974abef10770ea354062dbdacaf515f9308d1f2e53fa1867e354d51f",
+        "size": 3042
+      },
+      {
+        "path": "devcircuit/schemas/assurance-dossier.schema.json",
+        "sha256": "c14016a43bb1822b2c5760851bed964a5c4ed5cd42f567d3b6cc05f5a3788da9",
+        "size": 1581
+      },
+      {
+        "path": "devcircuit/schemas/authorization-request-packet.schema.json",
+        "sha256": "45f8cfe561fce851c97920315528094f04bf0491d39e927dc50172fa21447f92",
+        "size": 1564
+      },
+      {
+        "path": "devcircuit/schemas/environment-discovery.schema.json",
+        "sha256": "8a9e60cd13c2538c51a1765b605479e02d3c030b99a6f95f096bccb8ca7e5913",
+        "size": 1720
+      },
+      {
+        "path": "devcircuit/schemas/guided-operator-state.schema.json",
+        "sha256": "21cd579ab6d19adc59cf7f3a90a9692b4e375ffc8d7e260fd5c22af7f6ff03a1",
+        "size": 841
+      },
+      {
+        "path": "devcircuit/schemas/lifecycle-profile.schema.json",
+        "sha256": "0ed6630b73895a442e24f88da4108f7e8120da6f6b1eb305e66af04970ee2547",
+        "size": 1777
+      },
+      {
+        "path": "devcircuit/schemas/manifest.schema.json",
+        "sha256": "133b5beb66f37b2cb8a25914b286bc1aabdaae7a57f803e048f89db38b5ecad9",
+        "size": 2766
+      },
+      {
+        "path": "devcircuit/schemas/minimal-intake-state.schema.json",
+        "sha256": "0f999262f36dbd85908c008f2e201a6a02cabe80069f33c91832efe35fbc2670",
+        "size": 1453
+      },
+      {
+        "path": "devcircuit/schemas/minimal-viable-baseline.schema.json",
+        "sha256": "5001c6fb36618782cdabac0adf8c5216027429e7598722d8cab78a80f2b1c7d7",
+        "size": 1521
+      },
+      {
+        "path": "devcircuit/schemas/onboarding-plan.schema.json",
+        "sha256": "8381ec76f12c24de6a01da5718048a251c9af03b01fd06ecd04e90daebb8f89f",
+        "size": 1046
+      },
+      {
+        "path": "devcircuit/schemas/onboarding-template.schema.json",
+        "sha256": "b0f389450a4de8c6198bb22138777074669e531e2f854d38e34ab778913987aa",
+        "size": 1089
+      },
+      {
+        "path": "devcircuit/schemas/production-observation.schema.json",
+        "sha256": "07a428671685b073c03451648d787c551dd3f5f25d2ce35243f68b351d9f7cf8",
+        "size": 892
+      },
+      {
+        "path": "devcircuit/schemas/quality-assessment.schema.json",
+        "sha256": "aa0a38dbeea3054441c78dc947a5002f6b8a69e64238d0a3b06180f7d2a98022",
+        "size": 3251
+      },
+      {
+        "path": "devcircuit/schemas/software-quality-profile.schema.json",
+        "sha256": "4bc7e5b962f2b6fb1471bd19021f6bc2ad2bf3655709c8c7a968c5e264fd2a6e",
+        "size": 2512
+      },
+      {
+        "path": "devcircuit/schemas/ux-assessment.schema.json",
+        "sha256": "df8fa17ed86214b59d296b452f2b3ab9ce2d0f7c2cd5cb669dcce855ea2b04bf",
+        "size": 2461
+      },
+      {
+        "path": "devcircuit/store.py",
+        "sha256": "7213e2c33c72a8af6e33aedac6fd424d321dfdfaadb31d1c7e82c6e213020b0a",
+        "size": 4975
+      },
+      {
+        "path": "devcircuit/template_edition.py",
+        "sha256": "8136d4adf61cfe73fe16d7ea2334108510fc6ee78f074815c43bc4818a892e67",
+        "size": 7437
+      },
+      {
+        "path": "devcircuit/ux.py",
+        "sha256": "ac80dad17154d5027dad4d2b1771a92a5964a82e6fae669419e69e25b040495c",
+        "size": 5790
+      },
+      {
+        "path": "devcircuit/validator.py",
+        "sha256": "9c52ea8f99cbc33def7d35da34924bd15deb8db1746e5cb7bcb026f68a748ffa",
+        "size": 22710
+      },
+      {
+        "path": "devcircuit/visual_operator.py",
+        "sha256": "0d66d7bf5ddfc8e03c33a013fb2d7fe6ba06fe0eb60bb13568cc1c12a2086143",
+        "size": 6862
+      },
+      {
+        "path": "examples/synthetic-valid.json",
+        "sha256": "1fdd74dfb324d959d22bdc1c4327623bfe1080d1e8c62cf26c596f556ca617ee",
+        "size": 7101
+      },
+      {
+        "path": "github-template/.devcircuit-template.json",
+        "sha256": "b6bde60e3cec60098c297f62aaad844fe9ae29726c2cf6d1271fcdec741e3485",
+        "size": 91
+      },
+      {
+        "path": "github-template/.github/workflows/initialize.yml",
+        "sha256": "33a818f2ca52126f86adbbebcee72b478a0fad5b7ddbdb202f828778e715d9e5",
+        "size": 348
+      },
+      {
+        "path": "github-template/.gitignore",
+        "sha256": "cee3b819bd469c759591f60a3922addc57a91c81f2d740e94a659eaa2873f174",
+        "size": 51
+      },
+      {
+        "path": "github-template/README.md",
+        "sha256": "a7cad4355273c9f10c964c8c6a6b38ae19dff5302993e4db4d721d075bbb5ade",
+        "size": 331
+      },
+      {
+        "path": "independent_verify.py",
+        "sha256": "7101d82bc5bf00a2ceddd026d0706c60d8e290556ead0aadb08466991d878810",
+        "size": 4593
+      },
+      {
+        "path": "kernel_tests/__init__.py",
+        "sha256": "a2a6c0edd03cfe35e453d028b384ed756cfa70a761a19b3f677f895dcca32855",
+        "size": 52
+      },
+      {
+        "path": "kernel_tests/test_adapters.py",
+        "sha256": "69761ef99889026f387b24958b0b7fd3cbb15bff5d9b12f15b955007309227a0",
+        "size": 3926
+      },
+      {
+        "path": "kernel_tests/test_assessment_policy.py",
+        "sha256": "9dedaa060967a0d79652c707d540d584e12b1efece778c3cb7905a82fd21b872",
+        "size": 2414
+      },
+      {
+        "path": "kernel_tests/test_assurance.py",
+        "sha256": "c6ccae65803da1bea1154a4397657d6e5a89319ca9e237fb772f4ac83d4cae44",
+        "size": 11484
+      },
+      {
+        "path": "kernel_tests/test_autonomy.py",
+        "sha256": "0143a30c29ddcf770ef7f65940bbca0162f72024d4791ff7c32289a0ce573fe0",
+        "size": 5172
+      },
+      {
+        "path": "kernel_tests/test_cli.py",
+        "sha256": "a7b2abccc2218f19d5758faaba32cece0eb4122bc2be475802b62bae56fa1b3e",
+        "size": 1087
+      },
+      {
+        "path": "kernel_tests/test_copilot.py",
+        "sha256": "df23aa7a910007ed83e2aeef06a7e1981cd793b234557d9bf7abda4df689d324",
+        "size": 7353
+      },
+      {
+        "path": "kernel_tests/test_copilot_cli.py",
+        "sha256": "994b29b29d0b62edd4d2573d7d8edcaed1144a85d10350359e981b035b39d87c",
+        "size": 954
+      },
+      {
+        "path": "kernel_tests/test_developer_experience.py",
+        "sha256": "d231aba9a5828d93f626bd5ab25584b8c9d552501d9994b37d524b51efa0d95c",
+        "size": 7932
+      },
+      {
+        "path": "kernel_tests/test_discovery.py",
+        "sha256": "05714e7446986f2bd4c05915fe5279fdcab897e8438e609ae6f956675d447799",
+        "size": 1299
+      },
+      {
+        "path": "kernel_tests/test_engine.py",
+        "sha256": "96bf23419c28b894d5883f934c1eba93fd82b28f316e6c77437b873a90b38248",
+        "size": 10865
+      },
+      {
+        "path": "kernel_tests/test_guided_operator.py",
+        "sha256": "89b399a6608e13f7017beb874a5d31ad9496f1ca52e2cd8fa5acd67590732871",
+        "size": 12242
+      },
+      {
+        "path": "kernel_tests/test_intake.py",
+        "sha256": "00eabf4693d1cd09848d0a463adf36a43e47dd1c3d80b320312469c84be158c5",
+        "size": 5922
+      },
+      {
+        "path": "kernel_tests/test_intake_cli.py",
+        "sha256": "37ee33eb7c4be00bfc7dc6b2cb318f6982c81f9a49cc347e8cdad0060c80c479",
+        "size": 1302
+      },
+      {
+        "path": "kernel_tests/test_normative_conformance.py",
+        "sha256": "acbf53620105e66c330b8d559eb6ed7987af0f52bbde6bb207d3db8f5b89df83",
+        "size": 8947
+      },
+      {
+        "path": "kernel_tests/test_onboarding.py",
+        "sha256": "95aa61fc651cfa8db366a21d1804e09736ef65e369bc6d02801ee1b3d9abc3ea",
+        "size": 3278
+      },
+      {
+        "path": "kernel_tests/test_operator_cli.py",
+        "sha256": "3d619f0c2632d762556a58c8d44647d6ed3cb2aec8146686bd18d808d21c0317",
+        "size": 2649
+      },
+      {
+        "path": "kernel_tests/test_production.py",
+        "sha256": "c8cc12ebe9ca4787367113125d80af6e331ff2f141c9fbcaef24cac899d2e294",
+        "size": 7462
+      },
+      {
+        "path": "kernel_tests/test_production_adapters.py",
+        "sha256": "c3f28640dc3d7d4e650d8d067f509885444dcb2b15fb36afb543ab00f95f4717",
+        "size": 3399
+      },
+      {
+        "path": "kernel_tests/test_quality.py",
+        "sha256": "89f86977da4719327055ca25f24900b87816a1e6964a6b8a8ca5a81fcb51130a",
+        "size": 7539
+      },
+      {
+        "path": "kernel_tests/test_quality_cli.py",
+        "sha256": "dc40e8cb5fd28b849cc81a6d5104aea3a37a8f3d7a8d516abadb2c474a719348",
+        "size": 1384
+      },
+      {
+        "path": "kernel_tests/test_release_crypto.py",
+        "sha256": "72e3fa9f7ff018bc452de7deb55ff60eab33705f621d041bd9386bd67a033a26",
+        "size": 556
+      },
+      {
+        "path": "kernel_tests/test_schemas.py",
+        "sha256": "5f38714ea0a14a00193ead604706952489523123f32b863351c96caa0c8ee6b7",
+        "size": 228
+      },
+      {
+        "path": "kernel_tests/test_store.py",
+        "sha256": "e012a6511b0030a19cafb76f924af11ac272ee36e8426952c3c0fd42ff75203a",
+        "size": 1411
+      },
+      {
+        "path": "kernel_tests/test_template_edition.py",
+        "sha256": "3b7b776a3e84f220480f9a277a70c05bb0a0c9dbfdb2850461bf5f01041a305d",
+        "size": 8098
+      },
+      {
+        "path": "kernel_tests/test_ux.py",
+        "sha256": "bcb623f3deea4e8455be4893375b269bc69263d2282e6104a03336ca41e7b18b",
+        "size": 7489
+      },
+      {
+        "path": "kernel_tests/test_ux_cli.py",
+        "sha256": "de5f79a446f7d51362e4442b507499b10a0a4c466f6da10b4c8b087f380b88d4",
+        "size": 1354
+      },
+      {
+        "path": "kernel_tests/test_validation.py",
+        "sha256": "e3121fbf84e2812fb12c2925c97e93a1ec934cb224aa09e92f4ae0f3e3f530ed",
+        "size": 2791
+      },
+      {
+        "path": "kernel_tests/test_visual_operator.py",
+        "sha256": "aa950291c343e52a22f965884e0733d1d6a76bc0b1c6b6b1844e6a0e73ceb77d",
+        "size": 1905
+      },
+      {
+        "path": "pyproject.toml",
+        "sha256": "6e92f97596bc89b6f3e97c976373112fd9c25ed2ef24f9ca8fa53ff0fd7912e6",
+        "size": 1308
+      },
+      {
+        "path": "requirements-ci.lock",
+        "sha256": "7ea5c8be54e2f29b927c58ba88e77cad681c9b83ab673787f1a0183874188a95",
+        "size": 22188
+      },
+      {
+        "path": "scripts/bootstrap.py",
+        "sha256": "a148998b85fcf021b6d2c3419921184e4eb52265bf7c5ea447918284310e4af2",
+        "size": 184
+      },
+      {
+        "path": "uv.lock",
+        "sha256": "2e1670096cbbc99dee18bf565d8e5ab4508b6d650a59ef1a1093ba7276f8b255",
+        "size": 83777
+      },
+      {
+        "path": "verification/ASSESSMENT_POLICY_1.0.0.json",
+        "sha256": "73b3c0baf27c44b3e2a78564b76f9f2beb78065b768cc60689108385517f23c6",
+        "size": 2429
+      }
+    ],
+    "inventory_sha256": "ef43b230ea350099bdf1b6149ce2e28f5b7bad21631de1e3eddeedc4427276b9",
+    "manifest": {
+      "artifacts": [
+        {
+          "id": "purpose",
+          "payload": {
+            "authority_source": "signed-spec:061888c899ee31e0ba11832156bd2f3ca568ed5ab48e392b71a9de93dae37fd9",
+            "beneficiaries": [
+              "users"
+            ],
+            "context": "{\"assessment_horizon\": \"one controlled cycle\", \"deployment\": \"local_simulation\", \"observation\": \"service --self-test\", \"runtime\": \"CPython >=3.10\"}",
+            "horizon": {
+              "end": 4102444800,
+              "start": 1792370603
+            },
+            "outcomes": [
+              {
+                "key": "health_rate",
+                "op": ">=",
+                "threshold": 1.0,
+                "unit": "ratio",
+                "variable": "rate"
+              }
+            ],
+            "purpose": "Demonstrate governed autonomous engineering"
+          },
+          "references": [],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A1",
+          "version": 1
+        },
+        {
+          "id": "requirements",
+          "payload": {
+            "constraints": [
+              "strict agent-only source and test changes",
+              "exact change-set build authorization",
+              "separate artifact acceptance and deployment authorization"
+            ],
+            "purpose_ref": {
+              "id": "purpose",
+              "version": 1
+            },
+            "requirements": [
+              {
+                "key": "test_pass_rate",
+                "op": ">=",
+                "threshold": 1.0,
+                "unit": "ratio",
+                "variable": "rate"
+              }
+            ],
+            "source_refs": [
+              "signed-spec:061888c899ee31e0ba11832156bd2f3ca568ed5ab48e392b71a9de93dae37fd9"
+            ]
+          },
+          "references": [
+            {
+              "id": "purpose",
+              "version": 1
+            }
+          ],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A2",
+          "version": 1
+        },
+        {
+          "id": "design",
+          "payload": {
+            "components": [
+              "src/service.py"
+            ],
+            "design_decisions": [
+              "canonical signed record graph",
+              "fail-closed policy engine",
+              "change-triggered reassessment"
+            ],
+            "interfaces": [
+              "CLI --self-test"
+            ],
+            "requirements_refs": [
+              {
+                "id": "requirements",
+                "version": 1
+              }
+            ]
+          },
+          "references": [
+            {
+              "id": "requirements",
+              "version": 1
+            }
+          ],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A3",
+          "version": 1
+        },
+        {
+          "id": "engineering-grant",
+          "payload": {
+            "actor": "engineering-reviewer",
+            "authority_source": "signed-record:5fbb921861b630c4cb9ad6b6a9a9e777e17f5adc589cff69761cc2a03b993095",
+            "authorized_actor": "agent",
+            "basis_refs": [],
+            "decided_at": 1792370604,
+            "decision": "approved",
+            "decision_kind": "engineering_authorization",
+            "scope": "build:999b7da00f6adc709a94dadf7816a74509e56932e533c4cb2ec90c95f799d353",
+            "target_ref": null,
+            "valid_until": 4102444800
+          },
+          "references": [],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A8",
+          "version": 1
+        },
+        {
+          "id": "build-work",
+          "payload": {
+            "assigned_actor": "agent",
+            "authorization_ref": {
+              "id": "engineering-grant",
+              "version": 1
+            },
+            "design_ref": {
+              "id": "design",
+              "version": 1
+            },
+            "execution_evidence_refs": [],
+            "instruction": "Build and test the exact governed change set",
+            "state_changed_at": 1792370604,
+            "work_id": "build:999b7da00f6adc709a94dadf7816a74509e56932e533c4cb2ec90c95f799d353",
+            "work_state": "authorized"
+          },
+          "references": [
+            {
+              "id": "design",
+              "version": 1
+            },
+            {
+              "id": "engineering-grant",
+              "version": 1
+            }
+          ],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A4",
+          "version": 1
+        },
+        {
+          "id": "production-grant",
+          "payload": {
+            "actor": "release-owner",
+            "authority_source": "signed-record:c07f23840ff240fec99e41e162e512d98e34159b728091b298c814004a0b4fb6",
+            "authorized_actor": null,
+            "basis_refs": [],
+            "decided_at": 1792370604,
+            "decision": "approved",
+            "decision_kind": "production_authorization",
+            "scope": "deploy:c07f23840ff240fec99e41e162e512d98e34159b728091b298c814004a0b4fb6",
+            "target_ref": null,
+            "valid_until": 4102444800
+          },
+          "references": [],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A8",
+          "version": 1
+        },
+        {
+          "id": "implementation",
+          "payload": {
+            "build_digest": "sha256:c07f23840ff240fec99e41e162e512d98e34159b728091b298c814004a0b4fb6",
+            "configuration_digest": "sha256:061888c899ee31e0ba11832156bd2f3ca568ed5ab48e392b71a9de93dae37fd9",
+            "deployment": {
+              "deployed_at": 1792370604,
+              "environment": "local_simulation",
+              "production_authorization_ref": {
+                "id": "production-grant",
+                "version": 1
+              },
+              "release_id": "deploy:c07f23840ff240fec99e41e162e512d98e34159b728091b298c814004a0b4fb6"
+            },
+            "design_ref": {
+              "id": "design",
+              "version": 1
+            },
+            "source_revision": "sha256:a5d96f2dc203050d19c60b833f71f8935d51070d654ddeab0cb8a869e5cf341a"
+          },
+          "references": [
+            {
+              "id": "design",
+              "version": 1
+            },
+            {
+              "id": "build-work",
+              "version": 1
+            },
+            {
+              "id": "production-grant",
+              "version": 1
+            }
+          ],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A5",
+          "version": 1
+        },
+        {
+          "id": "method-test_pass_rate",
+          "payload": {
+            "bindings": {
+              "measurement_key": "test_pass_rate",
+              "measurement_unit": "ratio",
+              "variable": "rate"
+            },
+            "criterion_key": "test_pass_rate",
+            "criterion_ref": {
+              "id": "requirements",
+              "version": 1
+            },
+            "max_age": 86400,
+            "min_coverage": 1.0,
+            "minimum_sources": 1
+          },
+          "references": [
+            {
+              "id": "requirements",
+              "version": 1
+            }
+          ],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A6",
+          "version": 1
+        },
+        {
+          "id": "observation-test_pass_rate",
+          "payload": {
+            "coverage": 1.0,
+            "kind": "test",
+            "measurement_units": {
+              "test_pass_rate": "ratio"
+            },
+            "measurements": {
+              "test_pass_rate": 1.0
+            },
+            "method_ref": {
+              "id": "method-test_pass_rate",
+              "version": 1
+            },
+            "observed_at": 1792370604,
+            "source_ids": [
+              "record-64ba753fa7ec6486"
+            ],
+            "source_provenance": [
+              "record-64ba753fa7ec6486",
+              "64ba753fa7ec64860c5b947d57df6db4e7c959a1bdc734c7443de4b73628e8c8"
+            ],
+            "target_ref": {
+              "id": "implementation",
+              "version": 1
+            }
+          },
+          "references": [
+            {
+              "id": "implementation",
+              "version": 1
+            },
+            {
+              "id": "method-test_pass_rate",
+              "version": 1
+            }
+          ],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A7",
+          "version": 1
+        },
+        {
+          "id": "method-health_rate",
+          "payload": {
+            "bindings": {
+              "measurement_key": "health_rate",
+              "measurement_unit": "ratio",
+              "variable": "rate"
+            },
+            "criterion_key": "health_rate",
+            "criterion_ref": {
+              "id": "purpose",
+              "version": 1
+            },
+            "max_age": 86400,
+            "min_coverage": 1.0,
+            "minimum_sources": 1
+          },
+          "references": [
+            {
+              "id": "purpose",
+              "version": 1
+            }
+          ],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A6",
+          "version": 1
+        },
+        {
+          "id": "observation-health_rate",
+          "payload": {
+            "coverage": 1.0,
+            "kind": "runtime",
+            "measurement_units": {
+              "health_rate": "ratio"
+            },
+            "measurements": {
+              "health_rate": 1.0
+            },
+            "method_ref": {
+              "id": "method-health_rate",
+              "version": 1
+            },
+            "observed_at": 1792370604,
+            "source_ids": [
+              "record-1c74316653c81694"
+            ],
+            "source_provenance": [
+              "record-1c74316653c81694",
+              "1c74316653c816949096b5f51aa851275609d07f32021de053ba188dbbcd22dc"
+            ],
+            "target_ref": {
+              "id": "implementation",
+              "version": 1
+            }
+          },
+          "references": [
+            {
+              "id": "implementation",
+              "version": 1
+            },
+            {
+              "id": "method-health_rate",
+              "version": 1
+            }
+          ],
+          "subject": "release-subject",
+          "supersedes": null,
+          "type": "A7",
+          "version": 1
+        }
+      ],
+      "assessed_at": 1792370604,
+      "spec_version": "0.3.1",
+      "system_id": "release-subject"
+    },
+    "manifest_sha256": "52a5722238c8752ea34eb980031bc04906701df8e6267464dbc41c836bbd1fa9",
+    "parts": {
+      "adapter_protocol": {
+        "evidence": {
+          "pass": true,
+          "tests": 5,
+          "transcript_sha256": "ecb03e5fecce7333605f4b2ef3e2b422ef50b0d162e1c46f1846690be187a069"
+        },
+        "files": [
+          "devcircuit/adapters.py",
+          "kernel_tests/test_adapters.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "application_project_generator": {
+        "evidence": {
+          "pass": true,
+          "tests": 7,
+          "transcript_sha256": "ece7717545c2f72353f62d37e2d205a7e7e5b96459d179e218d954ec1db41ee0"
+        },
+        "files": [
+          "devcircuit/project.py",
+          "kernel_tests/test_developer_experience.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "assurance_kernel": {
+        "evidence": {
+          "pass": true,
+          "tests": 19,
+          "transcript_sha256": "63ca477062367ec5cd8d9fc4c4b8cbe6a73773b99311a69679645a77ac055cdc"
+        },
+        "files": [
+          "devcircuit/assurance.py",
+          "kernel_tests/test_assurance.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "autonomous_orchestrator": {
+        "evidence": {
+          "pass": true,
+          "tests": 11,
+          "transcript_sha256": "98643163f5dafbd9d56882cc50c61de41c2bcbca75245fd8fa765416700d765f"
+        },
+        "files": [
+          "devcircuit/autonomy.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "central_policy": {
+        "evidence": {
+          "pass": true,
+          "tests": 19,
+          "transcript_sha256": "9235cf642bc7236a831c23e0a533abefb1dfae591e13e003cf512127e662f608"
+        },
+        "files": [
+          "devcircuit/policy.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "closed_loop_engine": {
+        "evidence": {
+          "pass": true,
+          "tests": 19,
+          "transcript_sha256": "9235cf642bc7236a831c23e0a533abefb1dfae591e13e003cf512127e662f608"
+        },
+        "files": [
+          "devcircuit/engine.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "command_interface": {
+        "evidence": {
+          "pass": true,
+          "tests": 49,
+          "transcript_sha256": "97eb2ee6a4bc199fc6f227e4923e1adbc877c9f96f871ef5cf37353f75ad184b"
+        },
+        "files": [
+          "devcircuit/cli.py",
+          "devcircuit/copilot_cli.py",
+          "devcircuit/operator_cli.py",
+          "devcircuit/visual_operator.py",
+          "devcircuit/production_adapters.py",
+          "devcircuit/quality.py",
+          "devcircuit/ux.py",
+          "devcircuit/assurance.py",
+          "devcircuit/intake.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "conversational_developer_experience": {
+        "evidence": {
+          "pass": true,
+          "tests": 7,
+          "transcript_sha256": "ece7717545c2f72353f62d37e2d205a7e7e5b96459d179e218d954ec1db41ee0"
+        },
+        "files": [
+          "devcircuit/developer_cli.py",
+          "kernel_tests/test_developer_experience.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "cross_artifact_validator": {
+        "evidence": {
+          "pass": true,
+          "tests": 43,
+          "transcript_sha256": "402dcbad8b5120b38f235741791d3192f2ae780a10e87d1dbcb6c271f85e61be"
+        },
+        "files": [
+          "devcircuit/validator.py",
+          "examples/synthetic-valid.json"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "governance_documentation": {
+        "evidence": {
+          "pass": true
+        },
+        "files": [
+          "README.md",
+          "DEVELOPER_EXPERIENCE.md",
+          "MIGRATION_TO_DEVCIRCUIT.md",
+          "NORMATIVE.md",
+          "ARCHITECTURE.md",
+          "AUTONOMY_PROTOCOL.md",
+          "COPILOT_GUIDE.md",
+          "OPERATOR_GUIDE.md",
+          "ONBOARDING_AND_VISUAL_OPERATOR.md",
+          "PRECONFIGURED_PRODUCTION_ADAPTERS.md",
+          "SOFTWARE_QUALITY_PROFILE.md",
+          "UX_ENGINEERING_PROFILE.md",
+          "PRODUCTION_PROFILE.md",
+          "GENERAL_ASSURANCE_GUIDE.md",
+          "OUTCOME_ASSURANCE.md",
+          "MINIMAL_VIABILITY_INTAKE.md",
+          "GITHUB_TEMPLATE_GUIDE.md",
+          "SECURITY.md",
+          "CONTRIBUTING.md",
+          "LICENSE",
+          "AGENTS.md"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "guided_onboarding_and_discovery": {
+        "evidence": {
+          "pass": true,
+          "tests": 7,
+          "transcript_sha256": "cc3f8968a527d3db43f4540be65b5566ab436595efe7b9bfa2f40b8ebf06215f"
+        },
+        "files": [
+          "devcircuit/onboarding.py",
+          "devcircuit/discovery.py",
+          "devcircuit/onboarding_templates",
+          "devcircuit/schemas/onboarding-template.schema.json",
+          "devcircuit/schemas/onboarding-plan.schema.json",
+          "devcircuit/schemas/environment-discovery.schema.json",
+          "ONBOARDING_AND_VISUAL_OPERATOR.md",
+          "kernel_tests/test_onboarding.py",
+          "kernel_tests/test_discovery.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "guided_operator_layer": {
+        "evidence": {
+          "pass": true,
+          "tests": 18,
+          "transcript_sha256": "c37ccaa644c748b45c5c59eda08083a37f60badc8dcfc3f3c4f88a2e3c615d38"
+        },
+        "files": [
+          "devcircuit/guided_operator.py",
+          "devcircuit/operator_cli.py",
+          "devcircuit/schemas/guided-operator-state.schema.json",
+          "devcircuit/schemas/authorization-request-packet.schema.json",
+          "OPERATOR_GUIDE.md",
+          "kernel_tests/test_guided_operator.py",
+          "kernel_tests/test_operator_cli.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "legacy_migration": {
+        "evidence": {
+          "pass": true,
+          "tests": 7,
+          "transcript_sha256": "ece7717545c2f72353f62d37e2d205a7e7e5b96459d179e218d954ec1db41ee0"
+        },
+        "files": [
+          "devcircuit/project.py",
+          "kernel_tests/test_developer_experience.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "lifecycle_copilot": {
+        "evidence": {
+          "pass": true,
+          "tests": 16,
+          "transcript_sha256": "e622d2f527d5e8ee1cfdfd07b8a65e911f70aa97dd20229204e28ce3dfc42a78"
+        },
+        "files": [
+          "devcircuit/copilot.py",
+          "devcircuit/copilot_cli.py",
+          "COPILOT_GUIDE.md"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "lifecycle_profiles": {
+        "evidence": {
+          "pass": true,
+          "tests": 19,
+          "transcript_sha256": "63ca477062367ec5cd8d9fc4c4b8cbe6a73773b99311a69679645a77ac055cdc"
+        },
+        "files": [
+          "devcircuit/profiles",
+          "GENERAL_ASSURANCE_GUIDE.md"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "local_execution_adapters": {
+        "evidence": {
+          "authority_gates": {
+            "acceptance_gate": {
+              "phase": "artifact_acceptance",
+              "required_scopes": [
+                "accept:c07f23840ff240fec99e41e162e512d98e34159b728091b298c814004a0b4fb6"
+              ],
+              "run_id": "assessment-run",
+              "state": "awaiting_non_autonomous_authority"
+            },
+            "build_gate": {
+              "changes": 1,
+              "iterations": 1,
+              "phase": "build",
+              "required_scopes": [
+                "build:999b7da00f6adc709a94dadf7816a74509e56932e533c4cb2ec90c95f799d353"
+              ],
+              "run_id": "assessment-run",
+              "state": "awaiting_non_autonomous_authority"
+            },
+            "deployment_gate": {
+              "phase": "deployment",
+              "required_scopes": [
+                "deploy:c07f23840ff240fec99e41e162e512d98e34159b728091b298c814004a0b4fb6"
+              ],
+              "run_id": "assessment-run",
+              "state": "awaiting_non_autonomous_authority"
+            }
+          },
+          "cycle": {
+            "checks": {
+              "accepted_snapshot_current": true,
+              "artifact_binding": true,
+              "artifact_level": true,
+              "baseline_spec_current": true,
+              "cycle_present": true,
+              "deployment_current": true,
+              "ledger_valid": true,
+              "manifest_binding": true,
+              "specification_valid": true,
+              "system_level": true
+            },
+            "claim_boundary": "signed local identities, CPython tests, local simulated deployment, self-test observation, one controlled cycle",
+            "intrinsic": "conformant",
+            "ledger_records": 23,
+            "mode": "devcircuit_strict_v1",
+            "relational": "locally_demonstrated_not_production_adequacy",
+            "valid": true
+          },
+          "pass": true
+        },
+        "files": [
+          "devcircuit/engine.py",
+          "devcircuit/autonomy.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "minimal_viability_intake": {
+        "evidence": {
+          "pass": true,
+          "tests": 18,
+          "transcript_sha256": "c20bea8592c4906238de4d6dcf4c6c08471539e0aec7bb332d4f91d46808be98"
+        },
+        "files": [
+          "devcircuit/intake.py",
+          "devcircuit/schemas/minimal-intake-state.schema.json",
+          "devcircuit/schemas/minimal-viable-baseline.schema.json",
+          "MINIMAL_VIABILITY_INTAKE.md",
+          "kernel_tests/test_intake.py",
+          "kernel_tests/test_intake_cli.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "normative_schema_contract": {
+        "evidence": {
+          "pass": true,
+          "tests": 1,
+          "transcript_sha256": "80193dfd232a045bc54ec32f8d5d4dc6cd83f23a54b4f6c7dda9654acbeebb6a"
+        },
+        "files": [
+          "devcircuit/schemas"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "preconfigured_production_adapters": {
+        "evidence": {
+          "pass": true,
+          "tests": 10,
+          "transcript_sha256": "3dd478f7d88978b749bb99ea14c3652bd42f39b27976bf99e4aea1984062fd97"
+        },
+        "files": [
+          "devcircuit/production_adapters.py",
+          "devcircuit/adapter_templates",
+          "devcircuit/schemas/production-observation.schema.json",
+          "PRECONFIGURED_PRODUCTION_ADAPTERS.md",
+          "kernel_tests/test_production_adapters.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "production_evidence_gate": {
+        "evidence": {
+          "pass": true,
+          "tests": 16,
+          "transcript_sha256": "fcb4a670ab11c7f29f2a1af47891bed50a575109cd055ccf0799facab306d20b"
+        },
+        "files": [
+          "devcircuit/production.py",
+          "PRODUCTION_PROFILE.md",
+          "kernel_tests/test_production.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "purpose_outcome_assurance": {
+        "evidence": {
+          "pass": true,
+          "tests": 19,
+          "transcript_sha256": "63ca477062367ec5cd8d9fc4c4b8cbe6a73773b99311a69679645a77ac055cdc"
+        },
+        "files": [
+          "devcircuit/assurance.py",
+          "devcircuit/profiles/base-production.json",
+          "OUTCOME_ASSURANCE.md",
+          "kernel_tests/test_assurance.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "release_assessment": {
+        "evidence": {
+          "pass": true,
+          "tests": 243,
+          "transcript_sha256": "b9d7b8a2eede17324eb1141339990554d730e70bff21949353219727d6275527"
+        },
+        "files": [
+          "devcircuit/release_assessment.py",
+          "independent_verify.py",
+          "build.py",
+          "verification/ASSESSMENT_POLICY_1.0.0.json"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "signed_record_store": {
+        "evidence": {
+          "pass": true,
+          "tests": 4,
+          "transcript_sha256": "e02b8364847d03b4b930297fb58dabff22acc5d2628ab5265c2bb5e4ab58c225"
+        },
+        "files": [
+          "devcircuit/store.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "software_quality_profile": {
+        "evidence": {
+          "pass": true,
+          "tests": 15,
+          "transcript_sha256": "c3cb8acdd8a2a69a6aae0988f74715f9c9e2da3755cf93d75432618d548b2ed9"
+        },
+        "files": [
+          "devcircuit/quality.py",
+          "devcircuit/quality_profiles/software-quality.json",
+          "devcircuit/profiles/software-quality.json",
+          "devcircuit/schemas/software-quality-profile.schema.json",
+          "devcircuit/schemas/quality-assessment.schema.json",
+          "SOFTWARE_QUALITY_PROFILE.md",
+          "kernel_tests/test_quality.py",
+          "kernel_tests/test_quality_cli.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "thin_github_starter": {
+        "evidence": {
+          "pass": true,
+          "tests": 7,
+          "transcript_sha256": "ece7717545c2f72353f62d37e2d205a7e7e5b96459d179e218d954ec1db41ee0"
+        },
+        "files": [
+          "github-template",
+          "GITHUB_TEMPLATE_GUIDE.md"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "ux_engineering_profile": {
+        "evidence": {
+          "pass": true,
+          "tests": 12,
+          "transcript_sha256": "6905650870ab7dd99e4f1b91e21801f3f2e6b91e2e8ac79de0828eb29b5848cd"
+        },
+        "files": [
+          "devcircuit/ux.py",
+          "devcircuit/quality_profiles/ux-engineering.json",
+          "devcircuit/profiles/ux-engineering.json",
+          "devcircuit/schemas/ux-assessment.schema.json",
+          "UX_ENGINEERING_PROFILE.md",
+          "kernel_tests/test_ux.py",
+          "kernel_tests/test_ux_cli.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      },
+      "visual_operator_interface": {
+        "evidence": {
+          "pass": true,
+          "tests": 5,
+          "transcript_sha256": "9f8b8ac6fc9a3845f804910ed0899ea7341bed8ed65698df5b1ca24a24516bf2"
+        },
+        "files": [
+          "devcircuit/visual_operator.py",
+          "devcircuit/operator_ui",
+          "ONBOARDING_AND_VISUAL_OPERATOR.md",
+          "kernel_tests/test_visual_operator.py"
+        ],
+        "intrinsic": "conformant",
+        "relational": "adequate_for_declared_part_conditions"
+      }
+    },
+    "policy_sha256": "8780405cdaea473b96c403f7441573c4621d01544556a63c73aece6585eb2447",
+    "started_at": 1792370588,
+    "tests": {
+      "pass": true,
+      "tests": 243,
+      "transcript_sha256": "b9d7b8a2eede17324eb1141339990554d730e70bff21949353219727d6275527"
+    },
+    "version": "1.0.0",
+    "whole": {
+      "intrinsic": "conformant",
+      "live_cycle_valid": true,
+      "parts_complete": true,
+      "relational": "purpose_sustaining_general_assurance_framework_adequate"
+    }
+  },
+  "evidence_sha256": "e6e025dd741d9f8ea714ff9e6450ffacb8fc265e1f42ba909c6edddb0c6609b3",
+  "signer": {
+    "algorithm": "RSA-SHA256",
+    "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxpRcLj8bZR1+1aDLIEKm\nqJMLeSJLGasIx3DTzYfSCe8+mMk4/KXTVR0dWyocZAaiE3KQj3u5k4xNAdyb2fMw\nRRUlwbpJtESXZGB7Ppegmfxw4FaoMv4IpHL7sEhp9DS0S/8OObaB0EKhEb3DNrDt\ntWKFl88tYDGTwN448FTyXm4SamaXZDKPaxbfLWWgX+evDK/QbEdg7vJjoUipd4xL\nSVd5BFyQ+7UfEeWTeSGbmhScWJ32ZurT8CklTle5vD+zLkGW9kIkUI1jiKhvn667\nA31DuaoIuhJ6a0McmCoKZIUA7NtfC52DcdmiTc68i8xgNU52cAM/Kr3UOPyJcJ9S\nFQIDAQAB\n-----END PUBLIC KEY-----\n",
+    "signature_base64": "FR/C6kLSoI9YLA8b1Ol7r5jXf42SCNde6ubegX0hfgtrCctdfSNOT9P+GuA2XtdSTsQJimG0MKR23IiTTrJ4gaGbddgcone/NzCnz0QG/cslcgAmYLjGUuuzLki/jnczlu9lM7LDyyUVnZtQlFCQDJRzhMY73v9AOoGNGF8s/LZOj7ZqG9rJNOSmgrznkzKWkXeXj9hclzaDwShV9cWE1rAvlHGcrJ+/ZbvIgJFYxFrbzmxBuMgtyAh7Zkr8k6fs8b4tjqUAO+X+rGJhN9Yef3SqF/zzorAFSP5DAKMmJ6aB0rDWI31+bLkBT5tP4mBFXaM/j9Ed0yhiW0ynUDg2OA=="
+  }
+}

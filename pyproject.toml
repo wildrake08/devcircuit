@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "devcircuit"
+version = "1.0.0"
+description = "End-to-end closed-loop software engineering with autonomous execution and explicit human authority"
+requires-python = ">=3.10"
+dependencies = ["jsonschema>=4.18,<5"]
+
+[project.scripts]
+devcircuit-control = "devcircuit.cli:main"
+devcircuit-validate = "devcircuit.validator:main"
+devcircuit-copilot = "devcircuit.copilot_cli:main"
+devcircuit-production-verify = "devcircuit.production:main"
+devcircuit-assure = "devcircuit.assurance:main"
+devcircuit-intake = "devcircuit.intake:main"
+devcircuit-operator = "devcircuit.operator_cli:main"
+devcircuit-quality = "devcircuit.quality:main"
+devcircuit-ux = "devcircuit.ux:main"
+devcircuit-operator-ui = "devcircuit.visual_operator:main"
+devcircuit-adapters = "devcircuit.production_adapters:main"
+devcircuit-template = "devcircuit.template_edition:main"
+devcircuit = "devcircuit.developer_cli:main"
+
+[tool.setuptools.packages.find]
+include = ["devcircuit*"]
+
+[tool.setuptools.package-data]
+devcircuit = ["schemas/*.json", "schemas/artifacts/*.json", "profiles/*.json", "quality_profiles/*.json", "onboarding_templates/*.json", "adapter_templates/*.json", "operator_ui/*.html", "operator_ui/*.css", "operator_ui/*.js"]

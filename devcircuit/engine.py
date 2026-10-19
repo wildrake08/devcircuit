@@ -1,0 +1,308 @@
+"""Canonical strict closed-loop engine built around signed immutable records."""
+from __future__ import annotations
+import json,shutil,subprocess,sys,time,uuid
+import fnmatch
+from pathlib import Path
+from .policy import Policy
+from .store import Store,canonical,digest,read,write
+from .validator import assess
+
+END=4102444800
+def ref(identifier):return {'id':identifier,'version':1}
+def artifact(system,identifier,kind,payload,references=()):return {'id':identifier,'version':1,'type':kind,'subject':system,'payload':payload,'references':[ref(x) for x in references],'supersedes':None}
+def default_spec(system_id,purpose,beneficiary):
+    return {'format':'DevCircuit-system-spec/v1','system_id':system_id,'purpose':purpose,'beneficiaries':[beneficiary],'outcomes':[{'key':'health_rate','variable':'rate','op':'>=','threshold':1.0,'unit':'ratio','source':'observe','measurement_key':'health_rate'}],'requirements':[{'key':'test_pass_rate','variable':'rate','op':'>=','threshold':1.0,'unit':'ratio','source':'build','measurement_key':'test_pass_rate'}],'constraints':['strict agent-only source and test changes','exact change-set build authorization','separate artifact acceptance and deployment authorization'],'components':['src/service.py'],'interfaces':['CLI --self-test'],'design_decisions':['canonical signed record graph','fail-closed policy engine','change-triggered reassessment'],'operating_conditions':{'runtime':'CPython >=3.10','deployment':'local_simulation','observation':'service --self-test','assessment_horizon':'one controlled cycle'}}
+def validate_spec(value):
+    required={'format','system_id','purpose','beneficiaries','outcomes','requirements','constraints','components','interfaces','design_decisions','operating_conditions'}
+    if set(value)!=required or value['format']!='DevCircuit-system-spec/v1' or not value['system_id'] or not value['purpose'] or not value['beneficiaries']:raise ValueError('invalid specification shape or identity')
+    keys=[]
+    for item in value['outcomes']+value['requirements']:
+        if set(item)!={'key','variable','op','threshold','unit','source','measurement_key'} or item['op'] not in ('>=','>','<=','<','==') or item['source'] not in ('build','observe') or not isinstance(item['threshold'],(int,float)) or isinstance(item['threshold'],bool) or not item['key'] or not item['variable'] or not item['unit'] or not item['measurement_key']:raise ValueError('unsupported criterion')
+        keys.append(item['key'])
+    if len(keys)!=len(set(keys)):raise ValueError('criterion keys must be unique')
+    return value
+
+class Engine:
+    def __init__(self,root):self.root=Path(root).resolve();self.store=Store(self.root);self.policy=Policy(self.store)
+    def _snapshot(self):
+        entries=[]
+        for folder in ('src','tests'):
+            base=self.root/folder
+            if base.exists():
+                for path in sorted(x for x in base.rglob('*') if x.is_file() and '__pycache__' not in x.parts and not x.is_symlink()):entries.append({'path':str(path.relative_to(self.root)),'sha256':digest(path.read_bytes()),'size':path.stat().st_size})
+        return entries
+    def _source_snapshot(self,base=None):
+        base=Path(base) if base else self.root/'src';return [{'path':str(path.relative_to(base)),'sha256':digest(path.read_bytes()),'size':path.stat().st_size} for path in sorted(x for x in base.rglob('*') if x.is_file() and '__pycache__' not in x.parts and not x.is_symlink())]
+    def _spec(self):
+        identifier,record=self.store.deref('spec','specification');spec=validate_spec(record['payload']['spec'])
+        if record['payload']['spec_digest']!=digest(spec):raise ValueError('specification digest mismatch')
+        return identifier,spec,record['payload']['spec_digest']
+    def init(self,spec=None,system_id='new-system',purpose='Provide a reliable service',beneficiary='users',template_manifest=None,github_owner=None,application_files=None,allow_thin_starter=False):
+        occupied=any(self.root.iterdir()) if self.root.exists() else False
+        template_digest=None;template_customizations=None
+        if template_manifest:
+            from .template_edition import adopt_scaffold
+            result,template_customizations=adopt_scaffold(self.root,template_manifest,github_owner)
+            template_digest=result['manifest_digest']
+            if not (self.root/'src').is_dir() or not (self.root/'tests').is_dir():raise ValueError('template must provide src and tests directories')
+        elif occupied and not allow_thin_starter:raise ValueError('target must be empty; use the signed thin application starter or choose a new directory')
+        self.root.mkdir(parents=True,exist_ok=True);self.store.bootstrap();value=validate_spec(read(spec)) if spec else default_spec(system_id,purpose,beneficiary)
+        if not template_manifest:
+            files=application_files or {
+                'src/service.py':'import argparse,json\ndef calculate(a,b):return a+b\ndef main():\n p=argparse.ArgumentParser();p.add_argument("--self-test",action="store_true");p.add_argument("--a",type=int,default=2);p.add_argument("--b",type=int,default=3);a=p.parse_args();ok=calculate(2,3)==5\n print(json.dumps({"healthy":ok,"result":calculate(a.a,a.b)}));return 0 if ok else 1\nif __name__=="__main__":raise SystemExit(main())\n',
+                'tests/test_service.py':'import unittest,sys\nfrom pathlib import Path\nsys.path.insert(0,str(Path(__file__).resolve().parents[1]/"src"))\nfrom service import calculate\nclass T(unittest.TestCase):\n def test_add(self):self.assertEqual(calculate(2,3),5)\n'
+            }
+            if not isinstance(files,dict) or not files:raise ValueError('application scaffold must contain files')
+            for name,content in files.items():
+                target=(self.root/name).resolve()
+                if self.root not in target.parents or not isinstance(content,str):raise ValueError('unsafe application scaffold')
+                target.parent.mkdir(parents=True,exist_ok=True);target.write_text(content)
+        spec_id=self.store.commit('specification_established','release-owner','spec_acceptor','specification',{'spec':value,'spec_digest':digest(value),'authority':'template_adoption' if template_manifest else 'bootstrap','template_manifest_digest':template_digest,'template_customizations':template_customizations},'spec');baseline={'snapshot':self._snapshot(),'spec_digest':digest(value),'accepted_executions':[],'cycle_digest':None,'template_manifest_digest':template_digest,'template_customizations':template_customizations};self.store.commit('baseline_established','release-owner','assessor','baseline',baseline,'baseline');write(self.store.state/'policy.json',{'format':'DevCircuit-policy/v1','default':'deny','agent_only_changes':True,'trace_required':True,'exact_change_set_authorization':True,'spec_acceptance_required':True,'artifact_acceptance_required':True,'deployment_authorization_required':True});return {'system_id':value['system_id'],'spec_record_digest':spec_id,'state':'initialized','mode':'strict','template_manifest_digest':template_digest,'template_customizations':template_customizations}
+    def authorize(self,scope,kind,signer,subject,valid_until=END):
+        role=kind+'_authorizer';self.store.require(signer,role)
+        try:self.policy.rejection(scope,kind,subject,signer)
+        except PermissionError:pass
+        else:raise PermissionError('exact authority scope was rejected; materially revise the subject to create a new scope')
+        try:self.policy.authorization(scope,kind,subject,signer)
+        except PermissionError:pass
+        else:raise ValueError('an active authorization already exists for this exact authority domain')
+        payload={'authorization_id':str(uuid.uuid4()),'scope':scope,'kind':kind,'subject':subject,'decision':'approved','issued_at':int(time.time()),'valid_until':valid_until};identifier=self.store.commit('authorization_approved',signer,role,'authorization',payload);write(self.store.state/'authorizations'/(identifier+'.json'),{'digest':identifier});return {'scope':scope,'authorization_digest':identifier}
+    @staticmethod
+    def baseline_basis(baseline):
+        excluded={'decision','authorization_digest','authorized_at','assumptions','resolved_facts','specification_digest','binding_digest','rejection'}
+        return {key:value for key,value in baseline.items() if key not in excluded}
+    def bind_product_baseline(self,baseline,authorization_digest,signer='owner'):
+        self.store.require(signer,'product_authorizer');scope='baseline:'+digest(self.baseline_basis(baseline));authorization=self.policy.authorization(scope,'product','system',signer)
+        if authorization[0]!=authorization_digest:raise PermissionError('product authorization does not bind this baseline')
+        _,current,_=self._spec();outcome=baseline.get('outcome_hypothesis') or {}
+        required={'metric','operator','target','unit'}
+        if not required<=set(outcome):raise ValueError('authorized baseline must declare a measurable outcome')
+        spec={**current,'purpose':baseline['purpose'],'beneficiaries':baseline['beneficiaries'],'outcomes':[{'key':outcome['metric'],'variable':outcome['metric'],'op':outcome['operator'],'threshold':outcome['target'],'unit':outcome['unit'],'source':'observe','measurement_key':outcome['metric']}],'operating_conditions':baseline['operating_conditions']}
+        obligations=[str(x) for x in baseline.get('compliance_obligations',[])]
+        if any('payment' in x.lower() or 'card' in x.lower() for x in obligations):
+            guard='raw payment-card data prohibited; sensitive inputs fail closed without reflection'
+            spec['constraints']=list(dict.fromkeys(spec['constraints']+[guard]))
+        spec=validate_spec(spec);spec_digest=digest(spec);payload={'spec':spec,'spec_digest':spec_digest,'authority':'authorized_product_baseline','baseline_scope':scope,'baseline_digest':digest(self.baseline_basis(baseline)),'product_authorization_digest':authorization_digest}
+        spec_record=self.store.commit('product_baseline_bound',signer,'product_authorizer','specification',payload,'spec')
+        binding={'baseline_scope':scope,'baseline_digest':payload['baseline_digest'],'authorization_digest':authorization_digest,'specification_digest':spec_digest,'specification_record_digest':spec_record,'bound_at':int(time.time())}
+        binding_digest=self.store.commit('product_baseline_binding_established',signer,'product_authorizer','product_baseline_binding',binding,'product-binding')
+        return {**binding,'binding_digest':binding_digest}
+    def verify_product_binding(self,baseline):
+        scope='baseline:'+digest(self.baseline_basis(baseline));authorization=self.policy.authorization(scope,'product','system','owner');binding_id,binding_record=self.store.deref('product-binding','product_baseline_binding','product_authorizer');binding=binding_record['payload'];_,spec,spec_digest=self._spec();outcome=baseline.get('outcome_hypothesis') or {}
+        expected={'key':outcome.get('metric'),'variable':outcome.get('metric'),'op':outcome.get('operator'),'threshold':outcome.get('target'),'unit':outcome.get('unit'),'source':'observe','measurement_key':outcome.get('metric')}
+        valid=(baseline.get('decision')=='authorized' and baseline.get('authorization_digest')==authorization[0]==binding.get('authorization_digest') and binding.get('baseline_scope')==scope and binding.get('baseline_digest')==digest(self.baseline_basis(baseline)) and binding.get('specification_digest')==spec_digest and spec.get('purpose')==baseline.get('purpose') and spec.get('beneficiaries')==baseline.get('beneficiaries') and spec.get('outcomes')==[expected] and spec.get('operating_conditions')==baseline.get('operating_conditions'))
+        if not valid:raise PermissionError('authorized product baseline is not exactly bound to the active executable specification')
+        return {'binding_digest':binding_id,'specification_digest':spec_digest}
+    def apply_template_upgrade(self,upgrade,decision_record,actor='release-owner'):
+        """Apply an exact release-owner decision without accepting application changes."""
+        self.store.require(actor,'assessor')
+        from .template_edition import template_upgrade_basis
+        current=template_upgrade_basis(self.root)
+        if upgrade!=current:raise PermissionError('template upgrade proposal is stale because the bound baseline or replacement scaffold changed')
+        decision=self.store.get(decision_record,'copilot_human_decision')
+        if decision['actor']!=actor or decision['payload'].get('outcome')!='approve':raise PermissionError('template upgrade requires an approved release-owner decision')
+        prior_id,prior_record=self.store.deref('baseline','baseline','assessor')
+        if prior_id!=upgrade['prior_baseline_record']:raise PermissionError('template upgrade prior baseline changed')
+        workflow_path=self.store.state/'operator/workflow.json';binding=None
+        if workflow_path.exists():
+            workflow=read(workflow_path);product=workflow.get('intake',{}).get('baseline')
+            if product and product.get('decision')=='authorized':
+                try:binding=self.verify_product_binding(product)
+                except (PermissionError,FileNotFoundError,ValueError,KeyError):
+                    authorization_digest=product.get('authorization_digest')
+                    if not authorization_digest:raise PermissionError('authorized product baseline lacks its exact authorization record')
+                    binding=self.bind_product_baseline(product,authorization_digest)
+                    product.update({'specification_digest':binding['specification_digest'],'binding_digest':binding['binding_digest']})
+                    intake=workflow['intake'];intake['state_digest']=digest({key:value for key,value in intake.items() if key!='state_digest'});workflow['updated_at']=int(time.time());workflow['state_digest']=digest({key:value for key,value in workflow.items() if key!='state_digest'});write(workflow_path,workflow)
+        affected=[];runs=self.store.state/'autonomy-runs'
+        for path in sorted(runs.glob('*.json')) if runs.exists() else []:
+            state=read(path)
+            if state.get('phase') not in ('complete','revoked','changes_requested'):
+                affected.append({'run_id':state['run_id'],'prior_phase':state.get('phase')})
+        payload={**upgrade,'decision_record':decision_record,'product_binding':binding,'affected_runs':affected,'applied_at':int(time.time())}
+        upgrade_record=self.store.commit('template_upgrade_applied',actor,'assessor','template_upgrade',payload)
+        _,_,spec_digest=self._spec();prior=prior_record['payload'];baseline={**prior,'spec_digest':spec_digest,'template_manifest_digest':upgrade['to_manifest_digest'],'template_upgrade_digest':upgrade_record}
+        baseline_record=self.store.commit('template_upgrade_baseline_rebound',actor,'assessor','baseline',baseline,'baseline')
+        for item in affected:
+            state_path=runs/(item['run_id']+'.json');state=read(state_path);state.update({'phase':'changes_requested','template_upgrade_reassessment':{'upgrade_digest':upgrade_record,'from_manifest_digest':upgrade['from_manifest_digest'],'to_manifest_digest':upgrade['to_manifest_digest'],'prior_phase':item['prior_phase']}});write(state_path,state)
+            mandate_path=self.store.state/'mandates'/(item['run_id']+'.json')
+            if mandate_path.exists():pointer=read(mandate_path);write(mandate_path,{**pointer,'status':'reassessment_required','template_upgrade_digest':upgrade_record})
+        return {'scope':upgrade['scope'],'upgrade_digest':upgrade_record,'baseline_record':baseline_record,'from_manifest_digest':upgrade['from_manifest_digest'],'to_manifest_digest':upgrade['to_manifest_digest'],'product_binding':binding,'reassessment_required':True,'affected_runs':[item['run_id'] for item in affected]}
+    def reject_authorization(self,scope,kind,subject,signer,proposal_digest,reason):
+        role=kind+'_authorizer';self.store.require(signer,role)
+        if not isinstance(reason,str) or not reason.strip():raise ValueError('rejection requires a nonempty rationale')
+        payload={'scope':scope,'kind':kind,'subject':subject,'decision':'rejected','proposal_digest':proposal_digest,'reason':reason.strip(),'decided_at':int(time.time())};identifier=self.store.commit('authorization_rejected',signer,role,'authorization_rejection',payload);write(self.store.state/'rejections'/(digest(scope)+'.json'),{'digest':identifier})
+        affected=[]
+        for path in (self.store.state/'autonomy-runs').glob('*.json') if (self.store.state/'autonomy-runs').exists() else []:
+            state=read(path);pending=state.get('pending') or {}
+            if state.get('build_scope')==scope or scope in (pending.get('acceptance_scope'),pending.get('release_scope')):
+                state.update({'phase':'changes_requested','rejection':{'scope':scope,'reason':reason.strip(),'record_digest':identifier}});write(path,state);affected.append(state['run_id'])
+        return {'scope':scope,'rejection_digest':identifier,'state':'rejected','affected_runs':affected}
+    def mandate(self,run_id,objective,driver,allowed_paths,requirements,max_iterations=5,max_changes=12,max_bytes=50000,expires_at=END,signer='engineering-reviewer'):
+        self.store.require(signer,'engineering_authorizer');workflow_path=self.store.state/'operator/workflow.json'
+        if workflow_path.exists():
+            baseline=read(workflow_path).get('intake',{}).get('baseline')
+            try:
+                if not baseline:raise PermissionError('missing baseline')
+                self.verify_product_binding(baseline)
+            except (PermissionError,FileNotFoundError,ValueError,KeyError) as exc:raise PermissionError('the exact product baseline requires explicit owner authorization and executable-specification binding before engineering') from exc
+        _,spec,spec_digest=self._spec();known={x['key'] for x in spec['requirements']+spec['outcomes']}
+        if not objective or not allowed_paths or not requirements or not set(requirements)<=known:raise ValueError('mandate must have an objective, path boundaries, and active criteria')
+        if min(max_iterations,max_changes,max_bytes)<=0:raise ValueError('mandate budgets must be positive')
+        path=self.store.state/'mandates'/(run_id+'.json')
+        if path.exists():raise ValueError('autonomy run id is immutable and already used')
+        payload={'run_id':run_id,'objective':objective,'driver':driver,'allowed_paths':sorted(set(allowed_paths)),'requirement_keys':sorted(set(requirements)),'max_iterations':max_iterations,'max_changes':max_changes,'max_bytes':max_bytes,'expires_at':expires_at,'spec_digest':spec_digest,'subject':'agent','decision':'approved'};identifier=self.store.commit('autonomy_mandated',signer,'engineering_authorizer','autonomy_mandate',payload);write(path,{'digest':identifier,'status':'active'});return {'run_id':run_id,'mandate_digest':identifier,'state':'authorized','authority_boundary':'engineering iteration only; no specification acceptance, artifact acceptance, or deployment authorization'}
+    def _mandate(self,run_id):
+        pointer=read(self.store.state/'mandates'/(run_id+'.json'))
+        if pointer.get('status','active')!='active':raise PermissionError('autonomy mandate is revoked')
+        record=self.store.get(pointer['digest'],'autonomy_mandate','engineering_authorizer');payload=record['payload']
+        if record['actor']!='engineering-reviewer' or payload['decision']!='approved' or payload['expires_at']<int(time.time()) or payload['spec_digest']!=self._spec()[2]:raise PermissionError('autonomy mandate is invalid, expired, or stale')
+        return pointer['digest'],payload
+    def revoke_mandate(self,run_id,signer,reason,confirmation,superseding_run_id=None):
+        self.store.require(signer,'engineering_authorizer');path=self.store.state/'mandates'/(run_id+'.json');pointer=read(path)
+        if pointer.get('status','active')!='active':raise ValueError('autonomy mandate is already inactive')
+        required='REVOKE '+run_id+' '+pointer['digest']
+        if confirmation!=required:raise PermissionError('exact mandate revocation challenge was not confirmed')
+        if not isinstance(reason,str) or not reason.strip():raise ValueError('mandate revocation requires a nonempty rationale')
+        if superseding_run_id==run_id:raise ValueError('superseding run id must be new')
+        payload={'run_id':run_id,'mandate_digest':pointer['digest'],'reason':reason.strip(),'superseding_run_id':superseding_run_id,'revoked_at':int(time.time())};record=self.store.commit('autonomy_mandate_revoked',signer,'engineering_authorizer','autonomy_mandate_revocation',payload);write(path,{**pointer,'status':'revoked','revocation_digest':record})
+        state_path=self.store.state/'autonomy-runs'/(run_id+'.json')
+        if state_path.exists():state=read(state_path);state.update({'phase':'revoked','revocation_digest':record});write(state_path,state)
+        return {'run_id':run_id,'state':'revoked','revocation_digest':record,'superseding_run_id':superseding_run_id}
+    def propose_spec(self,change_id,spec,actor='agent'):
+        self.policy.require_action('spec_propose',actor)
+        if (self.store.state/'spec-proposals'/(change_id+'.json')).exists():raise ValueError('specification change id is immutable and already used')
+        _,current,current_digest=self._spec();proposed=validate_spec(read(spec) if isinstance(spec,(str,Path)) else spec)
+        if proposed['system_id']!=current['system_id']:raise ValueError('system identity is immutable')
+        if digest(proposed)==current_digest:raise ValueError('specification is unchanged')
+        payload={'change_id':change_id,'prior_spec_digest':current_digest,'spec':proposed,'spec_digest':digest(proposed)};identifier=self.store.commit('specification_proposed',actor,'agent','spec_proposal',payload);write(self.store.state/'spec-proposals'/(change_id+'.json'),{'digest':identifier});return {'change_id':change_id,'proposal_digest':identifier,'engineering_scope':'spec:'+change_id,'acceptance_scope':'spec-accept:'+digest(proposed)}
+    def apply_spec(self,change_id,actor='release-owner'):
+        self.policy.require_action('spec_apply',actor);_,_,current_digest=self._spec();pointer=read(self.store.state/'spec-proposals'/(change_id+'.json'));proposal=self.store.get(pointer['digest'],'spec_proposal','agent')['payload']
+        if proposal['prior_spec_digest']!=current_digest:raise PermissionError('stale specification proposal')
+        eng=self.policy.authorization('spec:'+change_id,'engineering','agent','engineering-reviewer');accept=self.policy.authorization('spec-accept:'+proposal['spec_digest'],'release','operator','release-owner');payload={**proposal,'proposal_digest':pointer['digest'],'engineering_authorization':eng[0],'acceptance_authorization':accept[0]};identifier=self.store.commit('specification_applied',actor,'spec_acceptor','specification',payload,'spec');return {'spec_digest':proposal['spec_digest'],'spec_record_digest':identifier,'reassessment_required':True}
+    def request(self,work_id,instruction,path,content,requirements,expected_sha256=None,actor='agent'):
+        self.policy.require_action('work_request',actor)
+        if (self.store.state/'work'/(work_id+'.json')).exists():raise ValueError('work id is immutable and already used')
+        _,spec,spec_digest=self._spec();known={x['key'] for x in spec['requirements']+spec['outcomes']}
+        if not requirements or not set(requirements)<=known:raise ValueError('work must trace only to active criteria')
+        if path.startswith('/') or '..' in Path(path).parts or Path(path).parts[0] not in ('src','tests'):raise ValueError('path outside allowed roots')
+        if Path(path).parts[0]=='src' and path not in spec['components']:raise ValueError('source path is not a declared design component')
+        payload={'work_id':work_id,'instruction':instruction,'path':path,'content':content,'expected_sha256':expected_sha256,'requirement_keys':sorted(set(requirements)),'spec_digest':spec_digest,'state':'proposed'};identifier=self.store.commit('work_proposed',actor,'agent','work_request',payload);write(self.store.state/'work'/(work_id+'.json'),{'request_digest':identifier,'state':'proposed'});return {'work_id':work_id,'request_digest':identifier,'authorization_scope':'work:'+work_id}
+    def execute(self,work_id,actor='agent',mandate_id=None):
+        self.policy.require_action('work_execute',actor);pointer=read(self.store.state/'work'/(work_id+'.json'))
+        if pointer['state']!='proposed':raise PermissionError('work is not executable')
+        request=self.store.get(pointer['request_digest'],'work_request','agent')['payload'];authorization_digest=None
+        if mandate_id:
+            authorization_digest,mandate=self._mandate(mandate_id)
+            if not any(fnmatch.fnmatch(request['path'],pattern) for pattern in mandate['allowed_paths']) or not set(request['requirement_keys'])<=set(mandate['requirement_keys']):raise PermissionError('work exceeds autonomy mandate')
+        else:authorization_digest=self.policy.authorization('work:'+work_id,'engineering',actor,'engineering-reviewer')[0]
+        _,_,current_spec=self._spec()
+        if request['spec_digest']!=current_spec:raise PermissionError('work request traces to stale specification')
+        target=(self.root/request['path']).resolve()
+        if self.root not in target.parents or target.is_symlink():raise PermissionError('unsafe target')
+        before=digest(target.read_bytes()) if target.exists() else None
+        if request['expected_sha256']!=before and (request['expected_sha256'] is not None or before is not None):raise PermissionError('reviewed prior digest mismatch')
+        target.parent.mkdir(parents=True,exist_ok=True);tmp=target.with_suffix(target.suffix+'.agent-tmp');tmp.write_text(request['content']);tmp.replace(target);after=digest(target.read_bytes());payload={'work_id':work_id,'request_digest':pointer['request_digest'],'path':request['path'],'before_sha256':before,'after_sha256':after,'requirement_keys':request['requirement_keys'],'spec_digest':current_spec,'authorization_digest':authorization_digest,'mandate_id':mandate_id};identifier=self.store.commit('work_executed',actor,'agent','execution',payload);write(self.store.state/'work'/(work_id+'.json'),{'request_digest':pointer['request_digest'],'state':'executed','execution_digest':identifier});return {'work_id':work_id,'execution_digest':identifier,'after_sha256':after}
+    def trial(self,run_id,iteration,actor='agent'):
+        self.store.require(actor,'builder');self._mandate(run_id);snapshot=self._snapshot();started=int(time.time());cp=subprocess.run([sys.executable,'-m','unittest','discover','-s','tests','-v'],cwd=self.root,capture_output=True,text=True,timeout=120);payload={'run_id':run_id,'iteration':iteration,'source_digest':digest(snapshot),'started_at':started,'finished_at':int(time.time()),'exit_code':cp.returncode,'stdout_sha256':digest(cp.stdout.encode()),'stderr_sha256':digest(cp.stderr.encode()),'transcript':(cp.stdout+'\n'+cp.stderr)[-12000:]};identifier=self.store.commit('autonomous_trial_completed',actor,'builder','trial_evidence',payload);return {**payload,'trial_evidence_digest':identifier,'passed':cp.returncode==0}
+    def _executions(self):
+        values=[]
+        for path in (self.store.state/'work').glob('*.json'):
+            pointer=read(path)
+            if pointer.get('state')=='executed':
+                payload=self.store.get(pointer['execution_digest'],'execution','agent')['payload'];values.append({**payload,'execution_digest':pointer['execution_digest']})
+        return values
+    def plan(self):
+        _,_,spec_digest=self._spec();baseline_id,baseline_record=self.store.deref('baseline','baseline','assessor');before={x['path']:x for x in baseline_record['payload']['snapshot']};after={x['path']:x for x in self._snapshot()};changes=[]
+        for path in sorted(set(before)|set(after)):
+            if before.get(path)==after.get(path):continue
+            changes.append({'path':path,'before_sha256':before.get(path,{}).get('sha256'),'after_sha256':after.get(path,{}).get('sha256')})
+        self.policy.changed_paths_allowed(changes,self._executions(),spec_digest);core={'baseline_digest':baseline_id,'spec_digest':spec_digest,'changes':changes};change_set_digest=digest(core);identifier=self.store.commit('change_set_planned','release-owner','assessor','change_set',{**core,'change_set_digest':change_set_digest},'change-set');return {'change_set_digest':change_set_digest,'change_set_record_digest':identifier,'changes':changes,'build_scope':'build:'+change_set_digest}
+    def build(self,actor='agent'):
+        self.policy.require_action('build',actor);plan=self.plan();auth=self.policy.authorization(plan['build_scope'],'engineering',actor,'engineering-reviewer');snapshot=self._snapshot();started=int(time.time());cp=subprocess.run([sys.executable,'-m','unittest','discover','-s','tests','-v'],cwd=self.root,capture_output=True,text=True,timeout=120);finished=int(time.time());evidence={'source_digest':digest(snapshot),'inputs':snapshot,'command':['python','-m','unittest','discover','-s','tests','-v'],'started_at':started,'finished_at':finished,'exit_code':cp.returncode,'stdout_sha256':digest(cp.stdout.encode()),'stderr_sha256':digest(cp.stderr.encode()),'transcript':(cp.stdout+'\n'+cp.stderr)[-12000:]};evidence_id=self.store.commit('tests_executed',actor,'builder','test_evidence',evidence)
+        if cp.returncode:raise RuntimeError('tests failed; release stopped')
+        source_entries=self._source_snapshot();_,spec,_=self._spec()
+        if {'src/'+entry['path'] for entry in source_entries}!=set(spec['components']):raise ValueError('built source inventory must exactly equal declared design components')
+        artifact_digest=digest(source_entries);dest=self.store.state/'artifacts'/artifact_digest;dest.mkdir(parents=True,exist_ok=True)
+        for entry in source_entries:
+            target=dest/entry['path'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(self.root/'src'/entry['path'],target)
+        if self._source_snapshot(dest)!=source_entries:raise ValueError('built artifact differs from source inputs')
+        payload={'change_set_digest':plan['change_set_digest'],'change_set_record_digest':plan['change_set_record_digest'],'source_digest':digest(snapshot),'artifact_digest':artifact_digest,'artifact_entries':source_entries,'test_evidence_digest':evidence_id,'authorization_digest':auth[0],'built_at':finished};build_id=self.store.commit('build_completed',actor,'builder','build',payload,'build');pending={'phase':'built','build_digest':build_id,'change_set_digest':plan['change_set_digest'],'artifact_digest':artifact_digest,'acceptance_scope':'accept:'+artifact_digest,'release_scope':'deploy:'+artifact_digest};write(self.store.state/'pending.json',pending);return pending
+    def _release_candidate(self):
+        pending=read(self.store.state/'pending.json');build_record=self.store.get(pending['build_digest'],'build','builder');build=build_record['payload'];plan=self.plan()
+        if plan['change_set_digest']!=pending['change_set_digest']:raise PermissionError('change set changed after build')
+        source=self.store.state/'artifacts'/pending['artifact_digest']
+        if self._source_snapshot(source)!=build['artifact_entries'] or digest(build['artifact_entries'])!=pending['artifact_digest']:raise ValueError('artifact integrity failure')
+        return pending,build,plan,source
+    def accept(self,actor='release-owner'):
+        self.policy.require_action('accept',actor);pending,build,plan,_=self._release_candidate()
+        if pending.get('acceptance_digest'):return pending
+        authorization=self.policy.authorization(pending['acceptance_scope'],'release','operator','release-owner')
+        payload={'artifact_digest':pending['artifact_digest'],'build_digest':pending['build_digest'],'change_set_digest':pending['change_set_digest'],'authorization_digest':authorization[0],'accepted_at':int(time.time())}
+        acceptance_id=self.store.commit('artifact_accepted',actor,'artifact_acceptor','artifact_acceptance',payload,'acceptance');pending.update({'phase':'accepted','acceptance_digest':acceptance_id});write(self.store.state/'pending.json',pending);return pending
+    def deploy(self,actor='operator'):
+        self.policy.require_action('release',actor);pending,build,plan,source=self._release_candidate()
+        if not pending.get('acceptance_digest'):raise PermissionError('exact artifact acceptance must be recorded before deployment')
+        self.store.get(pending['acceptance_digest'],'artifact_acceptance','artifact_acceptor')
+        release_auth=self.policy.authorization(pending['release_scope'],'release',actor,'release-owner')
+        if pending.get('deployment_digest'):return pending
+        deployed=self.store.state/'deployment'
+        if deployed.exists():shutil.rmtree(deployed)
+        deployed.mkdir(parents=True,exist_ok=True)
+        for entry in build['artifact_entries']:
+            target=deployed/entry['path'];target.parent.mkdir(parents=True,exist_ok=True);shutil.copyfile(source/entry['path'],target)
+        if self._source_snapshot(deployed)!=build['artifact_entries']:raise ValueError('deployment integrity failure')
+        deployed_at=int(time.time());deployment={'artifact_digest':pending['artifact_digest'],'build_digest':pending['build_digest'],'acceptance_digest':pending['acceptance_digest'],'acceptance_authorization':self.store.get(pending['acceptance_digest'],'artifact_acceptance')['payload']['authorization_digest'],'release_authorization':release_auth[0],'environment':'local_simulation','path':str(deployed.relative_to(self.root)),'deployed_at':deployed_at};deployment_id=self.store.commit('artifact_deployed',actor,'deployer','deployment',deployment,'deployment');cp=subprocess.run([sys.executable,str(deployed/'service.py'),'--self-test'],capture_output=True,text=True,timeout=30);observation={'deployment_digest':deployment_id,'artifact_digest':pending['artifact_digest'],'observed_at':int(time.time()),'exit_code':cp.returncode,'healthy':cp.returncode==0,'output_sha256':digest(cp.stdout.encode())};observation_id=self.store.commit('operation_observed','monitor','observer','observation',observation,'observation')
+        if not observation['healthy']:raise RuntimeError('operational observation failed')
+        pending.update({'phase':'monitoring','deployment_digest':deployment_id,'observation_digest':observation_id,'deployed_at':deployed_at,'release_authorization':release_auth[0]});write(self.store.state/'pending.json',pending)
+        return pending
+    def local_closure_supported(self):
+        _,spec,_=self._spec();supported={('build','test_pass_rate','test_pass_rate'),('observe','health_rate','health_rate')}
+        return all((item['source'],item['key'],item['measurement_key']) in supported for item in spec['requirements']+spec['outcomes'])
+    def _close_cycle(self,pending,build,plan,manifest,relational,production_evidence_digest=None):
+        intrinsic=assess(manifest)
+        if intrinsic['errors']:raise RuntimeError('normative graph rejected: '+'; '.join(intrinsic['errors']))
+        write(self.store.state/'manifest.json',manifest);manifest_digest=digest(manifest);prior=self.store.deref('baseline','baseline','assessor')[1]['payload'];cycle={'cycle_id':str(uuid.uuid4()),'spec_digest':self._spec()[2],'change_set_digest':plan['change_set_digest'],'build_digest':pending['build_digest'],'artifact_digest':pending['artifact_digest'],'acceptance_digest':pending['acceptance_digest'],'deployment_digest':pending['deployment_digest'],'observation_digest':pending['observation_digest'],'manifest_digest':manifest_digest,'production_evidence_digest':production_evidence_digest,'intrinsic':'conformant','relational':relational};cycle_id=self.store.commit('cycle_closed','release-owner','assessor','cycle',cycle,'cycle');baseline={'snapshot':self._snapshot(),'spec_digest':cycle['spec_digest'],'accepted_executions':[x['execution_digest'] for x in plan['changes']],'cycle_digest':cycle_id,'template_manifest_digest':prior.get('template_manifest_digest'),'template_customizations':prior.get('template_customizations')};self.store.commit('baseline_accepted','release-owner','assessor','baseline',baseline,'baseline');pending.update({'phase':'closed','cycle_digest':cycle_id});write(self.store.state/'pending.json',pending);return self.verify()
+    def close_local(self,actor='release-owner'):
+        self.policy.require_action('close',actor);pending,build,plan,_=self._release_candidate()
+        if pending.get('phase')!='monitoring' or not pending.get('deployment_digest'):raise PermissionError('deployment and monitoring must be active before closure')
+        if not self.local_closure_supported():raise RuntimeError('criterion-specific production evidence is required; deployment remains active and the cycle remains open')
+        deployment=self.store.get(pending['deployment_digest'],'deployment','deployer')['payload'];observation=self.store.get(pending['observation_digest'],'observation','observer')['payload'];release_auth=self.store.get(pending['release_authorization'],'authorization','release_authorizer');manifest=self._manifest(plan,build,release_auth,deployment['deployed_at'],observation,pending['observation_digest'])
+        return self._close_cycle(pending,build,plan,manifest,'locally_demonstrated_not_production_adequacy')
+    def close_production(self,bundle,trusted_public_key,actor='release-owner'):
+        self.policy.require_action('close',actor);pending,build,plan,_=self._release_candidate()
+        if pending.get('phase')!='monitoring' or not pending.get('deployment_digest'):raise PermissionError('deployment and monitoring must be active before production closure')
+        from .production import assess as assess_production
+        result=assess_production(bundle,self._spec()[1],self.store.state/'deployment',trusted_public_key)
+        if not result['valid']:raise RuntimeError('production evidence rejected: '+'; '.join(result['errors']))
+        evidence=bundle['evidence'];acceptance=evidence['acceptance'];deployment_evidence=evidence['deployment']
+        if evidence['artifact']['digest']!=pending['artifact_digest'] or acceptance['decision_digest']!=pending['acceptance_digest'] or deployment_evidence['deployment_digest']!=pending['deployment_digest'] or deployment_evidence['authorization_digest']!=pending['release_authorization']:raise PermissionError('production evidence is not bound to the active accepted deployment')
+        evidence_id=self.store.commit('production_evidence_verified',actor,'assessor','production_evidence',{'bundle':bundle,'assessment':result})
+        deployment=self.store.get(pending['deployment_digest'],'deployment','deployer')['payload'];observation=self.store.get(pending['observation_digest'],'observation','observer')['payload'];release_auth=self.store.get(pending['release_authorization'],'authorization','release_authorizer');indexed={item['criterion_key']:item for item in evidence['observations']};manifest=self._manifest(plan,build,release_auth,deployment['deployed_at'],observation,pending['observation_digest'],indexed)
+        return self._close_cycle(pending,build,plan,manifest,'adequate_for_declared_production_conditions',evidence_id)
+    def complete(self,actor='operator'):
+        pending=read(self.store.state/'pending.json');self.policy.authorization(pending['acceptance_scope'],'release','operator','release-owner');self.policy.authorization(pending['release_scope'],'release',actor,'release-owner');self.accept();self.deploy(actor);return self.close_local()
+    def _manifest(self,plan,build,release_auth_record,deployed_at,observation,observation_id,criterion_evidence=None):
+        _,spec,spec_digest=self._spec();system=spec['system_id'];now=max(int(time.time()),observation['observed_at']);build_scope='build:'+plan['change_set_digest'];release_scope='deploy:'+build['artifact_digest'];build_auth=self.policy.authorization(build_scope,'engineering','agent','engineering-reviewer')[1];release_payload=release_auth_record['payload'];items=[artifact(system,'purpose','A1',{'purpose':spec['purpose'],'beneficiaries':spec['beneficiaries'],'outcomes':[{k:x[k] for k in ('key','variable','op','threshold','unit')} for x in spec['outcomes']],'horizon':{'start':build['built_at']-1,'end':END},'authority_source':'signed-spec:'+spec_digest,'context':json.dumps(spec['operating_conditions'],sort_keys=True)}),artifact(system,'requirements','A2',{'purpose_ref':ref('purpose'),'requirements':[{k:x[k] for k in ('key','variable','op','threshold','unit')} for x in spec['requirements']],'constraints':spec['constraints'],'source_refs':['signed-spec:'+spec_digest]},['purpose']),artifact(system,'design','A3',{'requirements_refs':[ref('requirements')],'components':spec['components'],'interfaces':spec['interfaces'],'design_decisions':spec['design_decisions']},['requirements']),artifact(system,'engineering-grant','A8',{'decision_kind':'engineering_authorization','actor':build_auth['actor'],'authorized_actor':'agent','scope':build_scope,'decision':'approved','decided_at':build_auth['payload']['issued_at'],'basis_refs':[],'target_ref':None,'authority_source':'signed-record:'+build['authorization_digest'],'valid_until':build_auth['payload']['valid_until']}),artifact(system,'build-work','A4',{'design_ref':ref('design'),'work_id':build_scope,'instruction':'Build and test the exact governed change set','work_state':'authorized','state_changed_at':build['built_at'],'assigned_actor':'agent','authorization_ref':ref('engineering-grant'),'execution_evidence_refs':[]},['design','engineering-grant']),artifact(system,'production-grant','A8',{'decision_kind':'production_authorization','actor':release_auth_record['actor'],'authorized_actor':None,'scope':release_scope,'decision':'approved','decided_at':release_payload['issued_at'],'basis_refs':[],'target_ref':None,'authority_source':'signed-record:'+build['artifact_digest'],'valid_until':release_payload['valid_until']}),artifact(system,'implementation','A5',{'design_ref':ref('design'),'source_revision':'sha256:'+build['source_digest'],'build_digest':'sha256:'+build['artifact_digest'],'configuration_digest':'sha256:'+spec_digest,'deployment':{'environment':'local_simulation','release_id':release_scope,'deployed_at':deployed_at,'production_authorization_ref':ref('production-grant')}},['design','build-work','production-grant'])]
+        test=self.store.get(build['test_evidence_digest'],'test_evidence','builder')['payload']
+        supported={('build','test_pass_rate','test_pass_rate'),('observe','health_rate','health_rate')}
+        if criterion_evidence is None and any((item['source'],item['key'],item['measurement_key']) not in supported for item in spec['requirements']+spec['outcomes']):raise RuntimeError('criterion-specific adapter required; use the production evidence profile')
+        for criterion in spec['requirements']+spec['outcomes']:
+            key=criterion['key'];method='method-'+key;obs='observation-'+key;decl='requirements' if criterion in spec['requirements'] else 'purpose';source=criterion['source']
+            if criterion_evidence is None:
+                value=1.0 if (test['exit_code']==0 if source=='build' else observation['healthy']) else 0.0;source_digest=build['test_evidence_digest'] if source=='build' else observation_id;observed_at=test['finished_at'] if source=='build' else observation['observed_at'];coverage=1.0;kind='test' if source=='build' else 'runtime';provenance=['record-'+source_digest[:16],source_digest]
+            else:
+                external=criterion_evidence[key];value=external['value'];source_digest=external['raw_evidence_sha256'];observed_at=external['observed_at'];coverage=external['coverage'];kind='runtime';provenance=['record-'+source_digest[:16],external['method'],external['adapter_digest'],source_digest]
+            items.append(artifact(system,method,'A6',{'criterion_ref':ref(decl),'criterion_key':key,'bindings':{'variable':criterion['variable'],'measurement_key':criterion['measurement_key'],'measurement_unit':criterion['unit']},'minimum_sources':1,'max_age':86400,'min_coverage':1.0},[decl]));items.append(artifact(system,obs,'A7',{'target_ref':ref('implementation'),'method_ref':ref(method),'measurements':{criterion['measurement_key']:value},'measurement_units':{criterion['measurement_key']:criterion['unit']},'observed_at':observed_at,'source_ids':['record-'+source_digest[:16]],'source_provenance':provenance,'coverage':coverage,'kind':kind},['implementation',method]))
+        return {'spec_version':'0.3.1','system_id':system,'assessed_at':now,'artifacts':items}
+    def verify(self):
+        ledger_ok,count=self.store.verify_ledger();_,spec,spec_digest=self._spec();_,baseline=self.store.deref('baseline','baseline','assessor');checks={'ledger_valid':ledger_ok,'specification_valid':digest(spec)==spec_digest,'accepted_snapshot_current':baseline['payload']['snapshot']==self._snapshot(),'baseline_spec_current':baseline['payload']['spec_digest']==spec_digest,'cycle_present':baseline['payload']['cycle_digest'] is not None};intrinsic='not_assessed';relational='not_assessed'
+        if checks['cycle_present']:
+            cycle=self.store.get(baseline['payload']['cycle_digest'],'cycle','assessor')['payload'];manifest=read(self.store.state/'manifest.json');result=assess(manifest);deployment=self.store.get(cycle['deployment_digest'],'deployment','deployer')['payload'];build=self.store.get(cycle['build_digest'],'build','builder')['payload'];checks['manifest_binding']=cycle['manifest_digest']==digest(manifest);checks['artifact_level']=result['artifact_level']=='pass';checks['system_level']=result['system_level']=='pass';checks['artifact_binding']=cycle.get('artifact_digest')==build.get('artifact_digest')==deployment.get('artifact_digest') and digest(build.get('artifact_entries',[]))==cycle.get('artifact_digest');checks['deployment_current']=self._source_snapshot(self.store.state/'deployment')==build.get('artifact_entries');intrinsic='conformant' if checks['artifact_level'] and checks['system_level'] else 'nonconformant';relational=cycle['relational'] if all(checks.values()) else 'not_adequate'
+        template_digest=baseline['payload'].get('template_manifest_digest')
+        if template_digest:
+            from .template_edition import verify_scaffold
+            template_result=verify_scaffold(self.root,self.root/'.devcircuit-template/template-manifest.json',strict=False)
+            checks['template_integrity']=template_result['valid'] and template_result['manifest_digest']==template_digest
+            custom=baseline['payload'].get('template_customizations',{});codeowners=self.root/'.github/CODEOWNERS';checks['template_customization_integrity']=bool(custom.get('github_owner')) and custom.get('codeowners_sha256')==digest(codeowners.read_bytes())
+        return {'valid':all(checks.values()),'checks':checks,'ledger_records':count,'intrinsic':intrinsic,'relational':relational,'mode':'devcircuit_strict_v1','claim_boundary':'signed local identities, CPython tests, local simulated deployment, self-test observation, one controlled cycle'}

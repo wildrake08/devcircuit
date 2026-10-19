@@ -1,0 +1,195 @@
+import json
+import sys
+import tempfile
+import time
+import unittest
+from pathlib import Path
+
+from devcircuit.engine import Engine
+from devcircuit.guided_operator import GuidedOperator
+from devcircuit.intake import AUTHORITY_ROLES
+
+
+def complete_facts():
+    return {
+        "system_name": "Coffee Cart POS",
+        "problem": "Manual checkout is slow and error prone",
+        "beneficiaries": ["operator", "customer"],
+        "outcome_statement": "Reduce representative checkout time",
+        "outcome_metric": "checkout_time_seconds",
+        "outcome_unit": "seconds",
+        "outcome_operator": "<=",
+        "outcome_target": 45,
+        "outcome_baseline": 80,
+        "data_classes": ["payment token", "transaction record"],
+        "compliance_obligations": ["payment-provider contract"],
+        "operating_conditions": {"location": "mobile cart", "connectivity": "intermittent"},
+        "authorities": {role: "person-" + role for role in AUTHORITY_ROLES},
+    }
+
+
+class GuidedOperatorTest(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        Engine(self.root).init(system_id="guided-test")
+        self.operator = GuidedOperator(self.root)
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def session(self, principal):
+        credential = (self.root / ".devcircuit" / "keys" / (principal + ".key")).read_text()
+        opened = self.operator.open_session(principal, credential)
+        return opened["session_id"], opened["token"]
+
+    def ready_intake(self, facts=None):
+        return self.operator.begin("point-of-sale", {"facts": facts or complete_facts()}, now=100)
+
+    def authorize_baseline(self):
+        owner, token = self.session("owner")
+        packet = self.operator.prepare_authorizations(owner, token)
+        self.assertEqual(len(packet["items"]), 1)
+        item = packet["items"][0]
+        self.assertTrue(item["scope"].startswith("baseline:"))
+        self.operator.decide(owner, token, item["decision_id"], "approve", item["approve_exactly"])
+        return owner, token
+
+    def mandate(self):
+        return {
+            "run_id": "guided-run",
+            "objective": "Verify the guided controlled lifecycle",
+            "driver": "guided-driver",
+            "allowed_paths": ["tests/*"],
+            "requirements": ["test_pass_rate"],
+            "max_iterations": 2,
+            "max_changes": 2,
+            "max_bytes": 2000,
+            "expires_at": int(time.time()) + 3600,
+        }
+
+    def test_initial_status_is_plain_and_actionable(self):
+        view = self.operator.status()
+        self.assertEqual(view["current_step"], "understand_the_need")
+        self.assertEqual(view["next"]["action"], "begin")
+        self.assertIn("never authorize", view["authority_notice"])
+
+    def test_empty_intake_is_presented_as_five_consolidated_groups(self):
+        view = self.operator.begin("point-of-sale", now=100)
+        self.assertEqual(view["intake"]["question_count"], 5)
+        self.assertEqual(view["next"]["action"], "answer")
+
+    def test_complete_intake_moves_to_one_mandate_step(self):
+        view = self.ready_intake()
+        self.assertEqual(view["intake"]["question_count"], 0)
+        self.assertEqual(view["current_step"], "authorize_product_baseline")
+        self.assertEqual(view["intake"]["baseline"]["decision"], "proposed_not_authorized")
+
+    def test_mandate_is_blocked_until_product_baseline_is_authorized(self):
+        self.ready_intake();session, token = self.session("engineering-reviewer")
+        with self.assertRaisesRegex(PermissionError,"product baseline"):self.operator.propose_mandate(session, token, self.mandate())
+        with self.assertRaisesRegex(PermissionError,"product baseline"):self.operator.engine.mandate('bypass','bypass','driver',['tests/*'],['test_pass_rate'])
+        self.authorize_baseline();proposal=self.operator.propose_mandate(session, token, self.mandate());self.assertEqual(proposal["kind"],"mandate")
+
+    def test_baseline_authorization_is_exact_and_visible(self):
+        self.ready_intake();owner,token=self.session("owner");packet=self.operator.prepare_authorizations(owner,token);self.assertEqual(packet["items"][0]["evidence"]["product_baseline"]["outcome_hypothesis"]["metric"],"checkout_time_seconds");item=packet["items"][0];self.operator.decide(owner,token,item["decision_id"],"approve",item["approve_exactly"]);view=self.operator.status();self.assertEqual(view["current_step"],"authorize_engineering");baseline=view["intake"]["baseline"];self.assertEqual(baseline["decision"],"authorized");self.assertRegex(baseline["authorization_digest"],r"^[0-9a-f]{64}$");self.assertEqual(self.operator.engine._spec()[1]["outcomes"][0]["key"],"checkout_time_seconds");self.assertEqual(self.operator.engine._spec()[1]["outcomes"][0]["op"],"<=")
+
+    def test_mandate_is_blocked_until_intake_is_complete(self):
+        self.operator.begin("point-of-sale", now=100)
+        session, token = self.session("engineering-reviewer")
+        with self.assertRaises(PermissionError):
+            self.operator.propose_mandate(session, token, self.mandate())
+
+    def test_material_change_reopens_only_affected_intake(self):
+        self.ready_intake()
+        view = self.operator.reassess({"change_id": "conditions-2", "kind": "operating_change", "affected_facts": ["operating_conditions"], "reason": "cart now operates outdoors"}, now=200)
+        self.assertEqual([question["id"] for question in view["intake"]["questions"]], ["resolve-conditions"])
+        self.assertEqual(view["current_step"], "understand_the_need")
+
+    def test_ambiguous_conversation_does_not_mutate_authority(self):
+        session, token = self.session("engineering-reviewer")
+        result = self.operator.turn(session, token, "I approve")
+        self.assertFalse(result["authoritative"])
+        self.assertIn("cannot treat conversation", result["response"])
+        self.assertFalse((self.root / ".devcircuit" / "authorizations").exists())
+
+    def test_turn_routes_status_without_state_change(self):
+        session, token = self.session("operator")
+        before = self.operator.store.verify_ledger()[1]
+        result = self.operator.turn(session, token, "status")
+        after = self.operator.store.verify_ledger()[1]
+        self.assertFalse(result["authoritative"])
+        self.assertEqual(before, after)
+
+    def test_release_requests_are_consolidated_but_decided_separately(self):
+        facts=complete_facts();facts.update({"outcome_metric":"health_rate","outcome_unit":"ratio","outcome_operator":">=","outcome_target":1.0,"outcome_baseline":0.0});self.ready_intake(facts)
+        self.authorize_baseline()
+        script = "import json;print(json.dumps({'status':'done','summary':'tests pass','changes':[]}))"
+        owner, owner_token = self.session("owner")
+        self.operator.register_driver(owner, owner_token, "guided-driver", "generic", [sys.executable, "-c", script, "{prompt}"])
+        eng, eng_token = self.session("engineering-reviewer")
+        release, release_token = self.session("release-owner")
+
+        mandate = self.operator.propose_mandate(eng, eng_token, self.mandate())
+        self.operator.decide(eng, eng_token, mandate["decision_id"], "approve", mandate["challenge"])
+        first = self.operator.continue_run(eng, eng_token, "guided-run")["result"]
+        self.assertEqual(first["phase"], "build")
+
+        build_packet = self.operator.prepare_authorizations(eng, eng_token)
+        self.assertEqual(len(build_packet["items"]), 1)
+        self.assertTrue(build_packet["items"][0]["evidence"]["trial"]["passed"])
+        self.assertIn("Ran", build_packet["items"][0]["evidence"]["trial"]["transcript"])
+        self.assertFalse(self.operator._is_authorized(build_packet["items"][0]["scope"], {"kind": "engineering", "subject": "agent"}))
+        build_item = build_packet["items"][0]
+        self.operator.decide(eng, eng_token, build_item["decision_id"], "approve", build_item["approve_exactly"])
+
+        second = self.operator.continue_run(eng, eng_token, "guided-run")["result"]
+        self.assertEqual(second["phase"], "artifact_acceptance")
+        release_packet = self.operator.prepare_authorizations(release, release_token)
+        self.assertEqual(len(release_packet["items"]), 1)
+        self.assertEqual(release_packet["items"][0]["scope"].split(":", 1)[0], "accept")
+        repeated = self.operator.prepare_authorizations(release, release_token)
+        self.assertEqual(
+            {item["decision_id"] for item in repeated["items"]},
+            {item["decision_id"] for item in release_packet["items"]},
+        )
+        item=release_packet["items"][0]
+        self.operator.decide(release, release_token, item["decision_id"], "approve", item["approve_exactly"])
+        deployment=self.operator.continue_run(release,release_token,"guided-run")["result"]
+        self.assertEqual(deployment["phase"],"deployment")
+        deploy_packet=self.operator.prepare_authorizations(release,release_token)
+        self.assertEqual(deploy_packet["items"][0]["scope"].split(":",1)[0],"deploy")
+        deploy=deploy_packet["items"][0]
+        self.operator.decide(release,release_token,deploy["decision_id"],"approve",deploy["approve_exactly"])
+        self.assertEqual(self.operator.status()["next"]["action"], "continue")
+        final = self.operator.continue_run(release, release_token, "guided-run")["result"]
+        self.assertTrue(final["valid"])
+        self.assertEqual(self.operator.status()["current_step"], "operate_and_reassess")
+        self.assertEqual(self.operator.status()["progress"]["completed"], self.operator.status()["progress"]["total"])
+        self.assertIn("monitoring", self.operator.status()["headline"])
+        baseline=self.operator.status()["intake"]["baseline"];self.assertEqual(baseline["resolved_facts"]["implementation_language"]["value"],"Python");self.assertEqual(baseline["resolved_facts"]["architecture_status"]["value"],"implemented_and_verified_against_current_specification")
+        self.assertNotIn("implementation_language",self.operator.status()["intake"]["deferred"])
+        self.assertIn("closed", self.operator.status()["evidence"]["summary"])
+
+    def test_wrong_principal_cannot_prepare_anothers_packet(self):
+        self.ready_intake()
+        release, token = self.session("release-owner")
+        with self.assertRaises(ValueError):
+            self.operator.prepare_authorizations(release, token)
+
+    def test_rejected_build_scope_is_enforced_and_requests_revision(self):
+        facts=complete_facts();facts.update({"outcome_metric":"health_rate","outcome_unit":"ratio","outcome_operator":">=","outcome_target":1.0,"outcome_baseline":0.0});self.ready_intake(facts);self.authorize_baseline()
+        script="import json;print(json.dumps({'status':'done','summary':'tests pass','changes':[]}))";owner,owner_token=self.session("owner");self.operator.register_driver(owner,owner_token,"guided-driver","generic",[sys.executable,"-c",script,"{prompt}"])
+        eng,token=self.session("engineering-reviewer");mandate=self.operator.propose_mandate(eng,token,self.mandate());self.operator.decide(eng,token,mandate["decision_id"],"approve",mandate["challenge"]);self.operator.continue_run(eng,token,"guided-run")
+        packet=self.operator.prepare_authorizations(eng,token);item=packet["items"][0];rejected=self.operator.decide(eng,token,item["decision_id"],"reject",item["reject_exactly"],"missing adversarial coverage")
+        self.assertEqual(rejected["effect"]["state"],"rejected");state=json.loads((self.root/".devcircuit/autonomy-runs/guided-run.json").read_text());self.assertEqual(state["phase"],"changes_requested");self.assertFalse(any(x["scope"]==item["scope"] for x in self.operator.status()["authorization_requests"]))
+        with self.assertRaisesRegex(PermissionError,"rejected"):self.operator.engine.authorize(item["scope"],"engineering","engineering-reviewer","agent")
+
+    def test_duplicate_workflow_is_rejected(self):
+        self.operator.begin("point-of-sale", now=100)
+        with self.assertRaises(ValueError):
+            self.operator.begin("point-of-sale", now=101)
+
+
+if __name__ == "__main__":
+    unittest.main()

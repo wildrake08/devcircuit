@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+.coverage
+.pytest_cache/
+dist/
+build/
+*.egg-info/
+
+# Local authority credentials and bearer-session vaults must never be committed.
+.devcircuit/keys/
+.devcircuit/operator/local-sessions.json
+*.key
+*.pem
+*.p12
+*.pfx
+credentials*.json
+secrets*.json

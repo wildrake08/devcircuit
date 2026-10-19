@@ -1,0 +1,38 @@
+{
+  "format": "DevCircuit-assessment-policy/v1",
+  "version": "1.0.0",
+  "assessment_format": "DevCircuit-parts-whole-assessment/v1",
+  "minimum_tests": 243,
+  "required_parts": [
+    "assurance_kernel", "purpose_outcome_assurance", "minimal_viability_intake",
+    "guided_operator_layer", "guided_onboarding_and_discovery", "visual_operator_interface",
+    "preconfigured_production_adapters", "software_quality_profile", "ux_engineering_profile",
+    "lifecycle_profiles", "adapter_protocol", "normative_schema_contract",
+    "cross_artifact_validator", "signed_record_store", "central_policy", "closed_loop_engine",
+    "autonomous_orchestrator", "lifecycle_copilot", "command_interface", "release_assessment",
+    "governance_documentation", "local_execution_adapters", "production_evidence_gate",
+    "application_project_generator", "conversational_developer_experience", "legacy_migration",
+    "thin_github_starter"
+  ],
+  "required_dimensions": ["sufficiency", "grounding", "effectiveness", "feasibility", "resilience", "verifiability", "adaptability"],
+  "required_documents": [
+    "README.md", "DEVELOPER_EXPERIENCE.md", "MIGRATION_TO_DEVCIRCUIT.md", "NORMATIVE.md", "ARCHITECTURE.md",
+    "AUTONOMY_PROTOCOL.md", "COPILOT_GUIDE.md", "OPERATOR_GUIDE.md", "ONBOARDING_AND_VISUAL_OPERATOR.md",
+    "PRECONFIGURED_PRODUCTION_ADAPTERS.md", "SOFTWARE_QUALITY_PROFILE.md", "UX_ENGINEERING_PROFILE.md",
+    "PRODUCTION_PROFILE.md", "GENERAL_ASSURANCE_GUIDE.md", "OUTCOME_ASSURANCE.md",
+    "MINIMAL_VIABILITY_INTAKE.md", "GITHUB_TEMPLATE_GUIDE.md", "SECURITY.md", "CONTRIBUTING.md",
+    "LICENSE", "AGENTS.md"
+  ],
+  "required_claim_boundary_terms": [
+    "external versioned assurance kernel", "thin GitHub application starter",
+    "application-centered generated repository", "one-command project creation",
+    "primary conversational developer interface", "internal session-token vault",
+    "no manual digest copying", "explicit non-autonomous human decisions",
+    "autonomous resumable engineering supervisor", "durable artifact acceptance",
+    "durable deployment", "monitoring active before closure",
+    "criterion-specific production evidence", "two distinct passing production outcome periods",
+    "signed legacy migration plan", "repository rulesets remain external controls",
+    "no universal or permanent production claim", "no OS sandbox guarantee",
+    "no production identity-provider guarantee"
+  ]
+}
